@@ -1,2 +1,2 @@
 # wp-druid
-Druid Wordpress Plugin
+DruID Wordpress Plugin
