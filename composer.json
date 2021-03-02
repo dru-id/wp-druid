@@ -1,0 +1,29 @@
+{
+    "name" : "dru-id/wordpress",
+    "description" : "Wordpress plugin to work with DruID.",
+    "version" : "1.0.0",
+    "type" : "library",
+    "keywords" : [ "auth", "wordpress plugin" ],
+    "support" : {
+        "email" : "support@dru-id.com"
+    },
+
+    "minimum-stability": "stable",
+    "require": {
+        "druid/php-sdk": "dev-master",
+        "monolog/monolog": "1.*",
+        "php-console/php-console": "~3.0",
+        "hashids/hashids": "1.*"
+    },
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/dru-id/druid-php-sdk"
+    }],
+    "autoload": {
+        "classmap": ["controllers", "lib"],
+        "files": [
+            "lib/WP_Druid/Utils/helpers.php",
+            "lib/WP_Druid/Collections/actions.php",
+            "lib/WP_Druid/Collections/shortcodes.php"]
+    }
+}

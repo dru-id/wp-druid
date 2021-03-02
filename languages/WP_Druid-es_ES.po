@@ -1,0 +1,101 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Druid\n"
+"POT-Creation-Date: 2016-05-12 13:13+0200\n"
+"PO-Revision-Date: 2016-05-12 13:13+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: controllers\n"
+"X-Poedit-SearchPath-1: lib\n"
+"X-Poedit-SearchPath-2: views\n"
+"X-Poedit-SearchPath-3: WP_Druid.php\n"
+
+#: WP_Druid.php:149 lib/WP_Druid/Admin_Menu/Services/Admin_Menu_Manager.php:28
+#: views/admin/pages/error-log/home-error-log.php:5
+msgid "Error Log"
+msgstr "Registro de errores"
+
+#: WP_Druid.php:152
+msgid "Settings"
+msgstr "Configuración"
+
+#: lib/WP_Druid/Admin_Menu/Services/Admin_Menu_Manager.php:26
+msgid "DruID"
+msgstr "DruID"
+
+#: lib/WP_Druid/Services/Callbacks/Post_Login.php:48
+msgid "We cannot authorize the user with the current code."
+msgstr "No podemos autorizar el acceso al usuario con el código actual."
+
+#: lib/WP_Druid/Services/Callbacks/Post_Login.php:64
+msgid ""
+"An unknown error prevented us to identify you on the platform. Please try "
+"again."
+msgstr ""
+"Un error desconocido ha impedido identificarte en la plataforma. Por favor, "
+"inténtalo de nuevo."
+
+#: lib/WP_Druid/Services/Users.php:59
+msgid "We have had problems identifying on the web. Please try again."
+msgstr ""
+"Hemos tenido problemas para identificarte en la web. Por favor, inténtalo de "
+"nuevo."
+
+#: lib/WP_Druid/Services/Users.php:115 lib/WP_Druid/Services/Users.php:150
+msgid "We have had problems registering on the web."
+msgstr ""
+"Hemos tenido problemas para registrate en la web. Por favor, inténtalo de "
+"nuevo."
+
+#: lib/WP_Druid/Services/Users.php:182
+msgid "A WP_User object must be provided."
+msgstr "A WP_User object must be provided."
+
+#: lib/WP_Druid/Services/Users.php:216
+msgid "We have had problems updating the user data."
+msgstr "Hemos tenido problemas para actualizar los datos del usuario."
+
+#: views/admin/pages/settings/home-settings.php:8
+msgid "DruID Settings"
+msgstr "Configuración de DruID"
+
+#: views/admin/pages/settings/home-settings.php:12
+msgid "Settings saved."
+msgstr "Configuración salvada."
+
+#: views/admin/pages/settings/home-settings.php:18
+msgid "Basic"
+msgstr "Básico"
+
+#: views/admin/pages/settings/home-settings.php:19
+msgid "Clients"
+msgstr "Clientes"
+
+#: views/public/auth-controls.php:19
+msgid "Edit account"
+msgstr "Editar cuenta"
+
+#: views/public/auth-controls.php:20
+msgid "Logout"
+msgstr "Desconectar"
+
+#: views/public/auth-controls.php:22
+msgid "Login"
+msgstr "Identifícate"
+
+#: views/public/auth-controls.php:23
+msgid "Register"
+msgstr "Regístrate"
+
+#: views/public/error-page.php:5
+msgid "Back to home page"
+msgstr "Volver a la página principal"
