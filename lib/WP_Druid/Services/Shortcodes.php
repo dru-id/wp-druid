@@ -96,6 +96,7 @@ class Shortcodes
                 $data['is_user_logged'] = true;
                 $info = UserApi::getUserLogged();
                 if (!is_null($info)) {
+                    $data['oid'] = $info->user->oid;
                     $data['name'] = (isset($info->user->user_data->name->value) && $info->user->user_data->name->value) ? $info->user->user_data->name->value : '';
                     $data['surname'] = (isset($info->user->user_data->surname->value) && $info->user->user_data->surname->value) ? $info->user->user_data->surname->value : '';
                     $data['email'] = isset($info->user->user_ids->email->value) ? $info->user->user_ids->email->value : '';

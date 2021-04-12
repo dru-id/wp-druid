@@ -25,9 +25,12 @@ $state="&state=".$protocol.$_SERVER['SERVER_NAME']."/wog-promo-gracias/";
         ?>
         <a href="<?php echo $data['register_url'].$state; ?>" class="btn btn-primary"><?php echo __('Participa'); ?></a>
     <?php endif; ?>
-<?php else:?>
+<?php else:
+    $oid_=$data['oid'];
+    $dna_ = 'https://www.dna.demo.dru-id.com/s/wog/'.$oid_.'?redirect_uri='.urlencode('https://www.rewards.demo.dru-id.com/marketing/d70d55de459780a47f616125dce0fd7b53fb1ffa836278cbc7e19d9f4206523c?uid='.$oid_); 
+    ?>
     <?php if ($data['is_user_logged']) : ?>
-        <a href="/que-es-wogtechpro/" class="btn btn-primary"><?php echo __('QUIERO MI DESCUENTO'); ?></a>
+        <a href="<?php echo $dna_;?>" class="btn btn-primary"><?php echo __('QUIERO MI DESCUENTO'); ?></a>
     <?php else: 
         ?>
         <a href="<?php echo $data['login_url']; ?>"  class="btn btn-primary"><?php echo __('QUIERO MI DESCUENTO'); ?></a>
