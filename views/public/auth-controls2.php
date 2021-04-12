@@ -14,15 +14,23 @@ $username = trim(implode(' ', array($name, $surname)));
 $protocol = isset($_SERVER['HTTPS'])===true ? 'https://' : 'http://';
 $state="&state=".$protocol.$_SERVER['SERVER_NAME']."/wog-promo-gracias/";
 ?><div class="druid-auth-controls">
+<?php if ($data['data-value']!='qr'):?>
     <?php if ($data['is_user_logged']) : ?>
-    	<?php if ($data['urlCompleteAccount']=='') : ?>
-        	<a href="/wog-promo-gracias/" class="btn btn-primary"><?php echo __('Participa'); ?></a>
-		<?php else:?>
-			<a href="<?php echo $data['urlCompleteAccount']; ?>" class="btn btn-primary"><?php echo __('Participa'); ?></a>
-    	<?php endif;?>
-    <?php else : 
-    	?>
+        <?php if ($data['urlCompleteAccount']=='') : ?>
+            <a href="/wog-promo-gracias/" class="btn btn-primary"><?php echo __('Participa'); ?></a>
+        <?php else:?>
+            <a href="<?php echo $data['urlCompleteAccount']; ?>" class="btn btn-primary"><?php echo __('Participa'); ?></a>
+        <?php endif;?>
+    <?php else: 
+        ?>
         <a href="<?php echo $data['register_url'].$state; ?>" class="btn btn-primary"><?php echo __('Participa'); ?></a>
-        
     <?php endif; ?>
+<?php else:?>
+    <?php if ($data['is_user_logged']) : ?>
+        <a href="/que-es-wogtechpro/" class="btn btn-primary"><?php echo __('QUIERO MI DESCUENTO'); ?></a>
+    <?php else: 
+        ?>
+        <a href="<?php echo $data['login_url']; ?>"  class="btn btn-primary"><?php echo __('QUIERO MI DESCUENTO'); ?></a>
+    <?php endif; ?>
+<?php endif;?>   
 </div>
