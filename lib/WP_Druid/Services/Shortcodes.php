@@ -80,6 +80,8 @@ class Shortcodes
         ob_start();
 
         try{
+            $data_value='';
+            if (isset($attributes['data-value'])) $data_value=$attributes['data-value'];
             $scope = (isset($attributes['entry-point']) && $attributes['entry-point'])
                 ? $attributes['entry-point']
                 : null;
@@ -88,6 +90,7 @@ class Shortcodes
                 'register_url' => URLBuilder::getUrlRegister($scope),
                 'edit_account_url' => URLBuilder::getUrlEditAccount($scope),
                 'logout_url' => '/actions/logout',
+                'data-value' => $data_value,
             );
             if (Identity::isConnected()) {
                 $data['is_user_logged'] = true;
