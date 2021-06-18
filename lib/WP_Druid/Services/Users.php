@@ -205,7 +205,8 @@ class Users
             && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed
             && ($druid_user_data->user->user_ids->email->value != $wp_user->user_email)) {
 
-            $wp_user->user_email = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
+            //$wp_user->user_email = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
+            $wp_user->user_email = $druid_user_data->user->oid . '@dru-id.internal';
             $update_user_data = true;
         }
 
