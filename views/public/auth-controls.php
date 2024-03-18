@@ -10,10 +10,10 @@ if (!isset($data['register_url'])) { $data['register_url'] = '#'; }
 $username = array();
 if (isset($name) && $name) { $username[] = $name; }
 if (isset($surname) && $surname) { $username[] = $surname; }
-$username = trim(implode(' ', array($name, $surname)));
+$username = trim(implode(' ', $username));
+$page_id = get_queried_object_id();
 
-global $post;
-if ($post->ID==45 || $post->ID==64):
+if ($page_id==45 || $page_id==64):
     $find_= array("wogprod", "wogdev");
     $replace_= array("promo", "promo");
     $data['register_url']=str_replace($find_,$replace_,$data['register_url']);
