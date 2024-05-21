@@ -6,6 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    '7b11c4dc42b3b3023073cb14e519683c' => $vendorDir . '/ralouphie/getallheaders/src/getallheaders.php',
+    '6e3fae29631ef280660b3cdad06f25a8' => $vendorDir . '/symfony/deprecation-contracts/function.php',
+    '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
     '593c6a09ddf670156f174aaa02145c2b' => $baseDir . '/lib/WP_Druid/Utils/helpers.php',
     'b6077b79cea17876c1edf0782eabcd40' => $baseDir . '/lib/WP_Druid/Collections/actions.php',
     '92c32d8b6599521a44e8221c9fba15ef' => $baseDir . '/lib/WP_Druid/Collections/shortcodes.php',

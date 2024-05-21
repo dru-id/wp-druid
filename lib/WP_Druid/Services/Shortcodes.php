@@ -129,4 +129,36 @@ class Shortcodes
         return ob_get_clean();
     }
 
+    public static function get_custom_link($attributes = array())
+    {
+        ob_start();
+
+        try{
+
+            $text = (isset($attributes['text']) && $attributes['text'])
+                ? $attributes['text']
+                : null;
+            $href = (isset($attributes['href']) && $attributes['href'])
+                ? $attributes['href']
+                : null;
+            $class = (isset($attributes['class']) && $attributes['class'])
+                ? $attributes['class']
+                : null;
+            $data = array(
+                'text' => $text,
+                'href' => $href,
+                'class' => $class
+            );
+
+            Render_Service::render('public/custom-link', $data);
+
+        } catch (\Exception $e) {
+
+            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
+
+        }
+
+        return ob_get_clean();
+    }
+
 }

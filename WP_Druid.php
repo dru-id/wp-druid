@@ -18,6 +18,7 @@ use WP_Druid\Services\Errors as Errors_Service;
 use WP_Druid\Admin_Menu\Services\Admin_Menu_Manager;
 use WP_Druid\Services\Shortcodes;
 use WP_Druid\Services\Users as Users_Service;
+use WP_Druid\Services\Pulse\EventService as Events_Service;
 
 define('WP_DRUID', 'druid'); // Use this key to check if this plugin exists.
 define('WPDR_PLUGIN_PUBLIC_NAME', 'DruID for Wordpress');
@@ -43,7 +44,7 @@ define('WPDR_CUSTOM_RETURN_URL_SESSION_KEY', 'custom_return_url');
  */
 class WP_Druid
 {
-	public function init()
+    public function init()
     {
         if (version_compare(phpversion(), '5.3', '<')) {
             if (is_admin()) {
@@ -98,7 +99,7 @@ class WP_Druid
         if (is_admin()) {
             druid_x(new Admin_Menu_Manager())->init();
         }
-	}
+    }
 
     /**
      * In this method we will set up all action for this plugin.
@@ -108,22 +109,22 @@ class WP_Druid
     private function setup_actions()
     {
         add_action('init', function(){
-                druid_x(new Router_Service())->init();
+            druid_x(new Router_Service())->init();
 
-                if (!is_admin()) {
-                    // Forces user to logout if is not logged in Wordpress but logged in DruID.
-                    if (!is_user_logged_in() && Identity::isConnected()) {
-                        Identity::logoutUser();
-                    }
-
-                    // TODO: Forces user to logout if is not logged in DruID but logged in Wordpress.
-
-                    Identity::isConnected()
-                        ? do_action(WPDR_ACTION_USER_IS_LOGGED)
-                        : do_action(WPDR_ACTION_USER_IS_NOT_LOGGED);
+            if (!is_admin()) {
+                // Forces user to logout if is not logged in Wordpress but logged in DruID.
+                if (!is_user_logged_in() && Identity::isConnected()) {
+                    Identity::logoutUser();
                 }
 
-            }, 10, 0);
+                // TODO: Forces user to logout if is not logged in DruID but logged in Wordpress.
+
+                Identity::isConnected()
+                    ? do_action(WPDR_ACTION_USER_IS_LOGGED)
+                    : do_action(WPDR_ACTION_USER_IS_NOT_LOGGED);
+            }
+
+        }, 10, 0);
 
         add_action('wp_enqueue_scripts', function(){
             wp_enqueue_script('wpdr-login-sso', 'https://login.ciam.demo.dru-id.com/login/sso');
@@ -139,28 +140,58 @@ class WP_Druid
 
         if (is_admin()) { // Explicit actions for admin.
             register_activation_hook(WPDR_PLUGIN_FILE, function(){
-                    druid_x(new DB_Service())->install_db();
-                    flush_rewrite_rules();
-                });
+                druid_x(new DB_Service())->install_db();
+                flush_rewrite_rules();
+            });
             register_deactivation_hook(WPDR_PLUGIN_FILE, function(){
-                    druid_x(new DB_Service())->clean_db();
-                    flush_rewrite_rules();
-                });
+                druid_x(new DB_Service())->clean_db();
+                flush_rewrite_rules();
+            });
             add_action('activated_plugin', function ($plugin) {
-                    druid_x(new Router_Service())->add_rewrite_rules();
-                    flush_rewrite_rules();
-                    if ($plugin == WPDR_PLUGIN_NAME) {
-                        exit(wp_redirect(admin_url('admin.php?page=wpdr')));
-                    }
-                });
+                druid_x(new Router_Service())->add_rewrite_rules();
+                flush_rewrite_rules();
+                if ($plugin == WPDR_PLUGIN_NAME) {
+                    exit(wp_redirect(admin_url('admin.php?page=wpdr')));
+                }
+            });
             add_action('deactivated_plugin', function($plugin) {
-                    druid_x(new Router_Service())->add_rewrite_rules();
-                    flush_rewrite_rules();
-                });
+                druid_x(new Router_Service())->add_rewrite_rules();
+                flush_rewrite_rules();
+            });
             add_action('plugins_loaded', function(){ druid_x(new DB_Service())->check_update(); });
             add_action('deleted_user', function($wp_user_id) { Users_Service::delete_local_druid_user($wp_user_id); } );
+            add_action('wp_ajax_send_click', function() {
+                if (isset($_POST['id']) && isset($_POST['url']) && isset($_POST['current_url']) && isset($_POST['text'])) {
+                    $id = $_POST['id'];
+                    $url = $_POST['url'];
+                    $current_url = $_POST['current_url'];
+                    $text = $_POST['text'];
+                    $objectId = Identity::getThings()->getLoginStatus()->getOid();
+                    Events_Service::send_event($objectId, 'click', $id, $current_url, $url, $text);
+                } else {
+                    error_log('Error: Los parámetros URL y Texto son obligatorios.');
+                }
+            });
+            add_action('wp_ajax_send_promotion', function() {
+                if (isset($_POST['id']) && isset($_POST['url']) && isset($_POST['text'])) {
+                    $id = $_POST['id'];
+                    $url = $_POST['url'];
+                    $text = $_POST['text'];
+                    $objectId = Identity::getThings()->getLoginStatus()->getOid();
+                    Events_Service::send_event($objectId, 'promotion', $id, null, $url, $text);
+                } else {
+                    error_log('Error: Los parámetros URL y Texto son obligatorios.');
+                }
+            });
         } else { // Explicit actions for non-admin.
+            add_action('template_redirect', function() {
+                if (!is_admin() && is_user_logged_in() && Identity::isConnected()) {
+                    $objectId = Identity::getThings()->getLoginStatus()->getOid();
+                    Events_Service::send_event($objectId, 'view');
+                }
+            }, 0, 10);
         }
+
     }
 
     /**
@@ -173,14 +204,14 @@ class WP_Druid
         if (is_admin()) { // Filters to be executed only in admin pages.
             // Add settings links.
             add_filter('plugin_action_links_'.WPDR_PLUGIN_NAME, function($links) {
-                    $settings_link = '<a href="admin.php?page=wpdr-errors">' . __('Error Log', WPDR_LANG_NS) . '</a>';
-                    array_unshift($links, $settings_link);
+                $settings_link = '<a href="admin.php?page=wpdr-errors">' . __('Error Log', WPDR_LANG_NS) . '</a>';
+                array_unshift($links, $settings_link);
 
-                    $settings_link = '<a href="admin.php?page=wpdr">' . __('Settings', WPDR_LANG_NS) . '</a>';
-                    array_unshift($links, $settings_link);
+                $settings_link = '<a href="admin.php?page=wpdr">' . __('Settings', WPDR_LANG_NS) . '</a>';
+                array_unshift($links, $settings_link);
 
-                    return $links;
-                });
+                return $links;
+            });
         }
     }
 
@@ -193,6 +224,7 @@ class WP_Druid
     {
         add_shortcode(DRUID_AUTH_CONTROLS, array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls'));
         add_shortcode(DRUID_AUTH_CONTROLS2, array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls2'));
+        add_shortcode(CUSTOM_LINK, array('\WP_Druid\Services\Shortcodes', 'get_custom_link'));
     }
 }
 

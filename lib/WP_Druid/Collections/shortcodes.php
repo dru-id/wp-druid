@@ -12,5 +12,6 @@ if (!defined('WPDR_SHORTCODES__CONSTANTS__')) {
      */
     define('DRUID_AUTH_CONTROLS', 'druid_auth_controls');
     define('DRUID_AUTH_CONTROLS2', 'druid_auth_controls2');
+    define('CUSTOM_LINK', 'custom_link');
 
 }
