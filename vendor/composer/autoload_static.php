@@ -7,6 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
 {
     public static $files = array (
+        '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '593c6a09ddf670156f174aaa02145c2b' => __DIR__ . '/../..' . '/lib/WP_Druid/Utils/helpers.php',
         'b6077b79cea17876c1edf0782eabcd40' => __DIR__ . '/../..' . '/lib/WP_Druid/Collections/actions.php',
         '92c32d8b6599521a44e8221c9fba15ef' => __DIR__ . '/../..' . '/lib/WP_Druid/Collections/shortcodes.php',
@@ -16,6 +19,8 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
             'PhpConsole\\' => 11,
         ),
         'M' => 
@@ -24,6 +29,9 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         ),
         'G' => 
         array (
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
             'Genetsis\\Tests\\' => 15,
             'Genetsis\\' => 9,
         ),
@@ -34,6 +42,15 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
+        ),
         'PhpConsole\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-console/php-console/src/PhpConsole',
@@ -41,6 +58,18 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
         'Genetsis\\Tests\\' => 
         array (
@@ -82,6 +111,8 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         'WP_Druid\\Services\\Callbacks\\Pub_Sub_Hubbub' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Callbacks/Pub_Sub_Hubbub.php',
         'WP_Druid\\Services\\DB' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/DB.php',
         'WP_Druid\\Services\\Errors' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Errors.php',
+        'WP_Druid\\Services\\Pulse\\Event' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Pulse/Event.php',
+        'WP_Druid\\Services\\Pulse\\PulseRestClient' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Pulse/PulseRestClient.php',
         'WP_Druid\\Services\\Render' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Render.php',
         'WP_Druid\\Services\\Router' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Router.php',
         'WP_Druid\\Services\\Shortcodes' => __DIR__ . '/../..' . '/lib/WP_Druid/Services/Shortcodes.php',

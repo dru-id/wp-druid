@@ -25,6 +25,8 @@ return array(
     'WP_Druid\\Services\\Callbacks\\Pub_Sub_Hubbub' => $baseDir . '/lib/WP_Druid/Services/Callbacks/Pub_Sub_Hubbub.php',
     'WP_Druid\\Services\\DB' => $baseDir . '/lib/WP_Druid/Services/DB.php',
     'WP_Druid\\Services\\Errors' => $baseDir . '/lib/WP_Druid/Services/Errors.php',
+    'WP_Druid\\Services\\Pulse\\Event' => $baseDir . '/lib/WP_Druid/Services/Pulse/Event.php',
+    'WP_Druid\\Services\\Pulse\\PulseRestClient' => $baseDir . '/lib/WP_Druid/Services/Pulse/PulseRestClient.php',
     'WP_Druid\\Services\\Render' => $baseDir . '/lib/WP_Druid/Services/Render.php',
     'WP_Druid\\Services\\Router' => $baseDir . '/lib/WP_Druid/Services/Router.php',
     'WP_Druid\\Services\\Shortcodes' => $baseDir . '/lib/WP_Druid/Services/Shortcodes.php',

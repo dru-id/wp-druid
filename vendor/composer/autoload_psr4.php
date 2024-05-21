@@ -7,8 +7,13 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-factory/src', $vendorDir . '/psr/http-message/src'),
+    'Psr\\Http\\Client\\' => array($vendorDir . '/psr/http-client/src'),
     'PhpConsole\\' => array($vendorDir . '/php-console/php-console/src/PhpConsole'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
+    'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
+    'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Genetsis\\Tests\\' => array($vendorDir . '/druid/php-sdk/test'),
     'Genetsis\\' => array($vendorDir . '/druid/php-sdk/src'),
 );
