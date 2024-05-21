@@ -28,7 +28,7 @@ class EventService
                 Pulse_Rest_Client::send($evento);
                 break;
 
-            case 'page':
+            case 'view':
 
                 if (in_array(get_the_ID(), array(45, 278, 180))) {
                     $objectUrl = get_permalink();

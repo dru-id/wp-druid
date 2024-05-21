@@ -61,8 +61,6 @@ class PulseRestClient
         // Obtener el token de acceso
         $token = self::getToken();
 
-        error_log('Pulse Token:' . $token);
-
         if (!$token) {
             return; // O manejar el error de alguna otra manera
         }
@@ -70,7 +68,6 @@ class PulseRestClient
         $url = 'https://beats.pulse.demo.dru-id.com/identities';
 
         try {
-            error_log('Pulse body:' . json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
             $response = $client->post($url, [
                 'headers' => [
                     'Content-Type' => 'application/json',
