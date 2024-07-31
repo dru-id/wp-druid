@@ -18,7 +18,7 @@ use WP_Druid\Services\Errors as Errors_Service;
 use WP_Druid\Admin_Menu\Services\Admin_Menu_Manager;
 use WP_Druid\Services\Shortcodes;
 use WP_Druid\Services\Users as Users_Service;
-use WP_Druid\Services\Pulse\EventService as Events_Service;
+use WP_Druid\Services\Pulse\PulseRestClient as Pulse_Client;
 
 define('WP_DRUID', 'druid'); // Use this key to check if this plugin exists.
 define('WPDR_PLUGIN_PUBLIC_NAME', 'DruID for Wordpress');
@@ -167,18 +167,7 @@ class WP_Druid
                     $current_url = $_POST['current_url'];
                     $text = $_POST['text'];
                     $objectId = Identity::getThings()->getLoginStatus()->getOid();
-                    Events_Service::send_event($objectId, 'click', $id, $current_url, $url, $text);
-                } else {
-                    error_log('Error: Los parámetros URL y Texto son obligatorios.');
-                }
-            });
-            add_action('wp_ajax_send_promotion', function() {
-                if (isset($_POST['id']) && isset($_POST['url']) && isset($_POST['text'])) {
-                    $id = $_POST['id'];
-                    $url = $_POST['url'];
-                    $text = $_POST['text'];
-                    $objectId = Identity::getThings()->getLoginStatus()->getOid();
-                    Events_Service::send_event($objectId, 'promotion', $id, null, $url, $text);
+                    Pulse_Client::send_event($objectId, 'click', $id, $current_url, $url, $text);
                 } else {
                     error_log('Error: Los parámetros URL y Texto son obligatorios.');
                 }
@@ -187,7 +176,7 @@ class WP_Druid
             add_action('template_redirect', function() {
                 if (!is_admin() && is_user_logged_in() && Identity::isConnected()) {
                     $objectId = Identity::getThings()->getLoginStatus()->getOid();
-                    Events_Service::send_event($objectId, 'view');
+                    Pulse_Client::send_event($objectId, 'view');
                 }
             }, 0, 10);
         }
@@ -223,7 +212,6 @@ class WP_Druid
     private function setup_shortcodes()
     {
         add_shortcode(DRUID_AUTH_CONTROLS, array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls'));
-        add_shortcode(DRUID_AUTH_CONTROLS2, array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls2'));
         add_shortcode(CUSTOM_LINK, array('\WP_Druid\Services\Shortcodes', 'get_custom_link'));
     }
 }
