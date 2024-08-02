@@ -30,13 +30,12 @@ class URLBuilder
      * @param array $prefill
      * @param string|null $state
      * @return string The URL for login process.
-     * @throws \Exception
      */
     public static function getUrlLogin($scope = null, $social = null, $urlCallback = null, array $prefill = array(), $state = null)
     {
 
         return self::buildLoginUrl(
-            Identity::getOAuthConfig()->getEndpointUrl('auth', 'authorization_endpoint'),
+            Identity::getOAuthConfig()->getEndpointUrl('auth','authorization_endpoint'),
             Identity::getOAuthConfig()->getRedirectUrl($urlCallback),
             $scope,
             $social,
@@ -56,12 +55,11 @@ class URLBuilder
      * @param array $prefill
      * @param string|null $state
      * @return string The URL for register process.
-     * @throws \Exception
      */
     public static function getUrlRegister($scope = null, $urlCallback = null, array $prefill = array(), $state = null)
     {
         return self::buildSignupUrl(
-            Identity::getOAuthConfig()->getEndpointUrl('auth','signup_endpoint'),
+            Identity::getOAuthConfig()->getEndpointUrl('auth','authorization_endpoint'),
             Identity::getOAuthConfig()->getRedirectUrl($urlCallback),
             $scope,
             $prefill,
@@ -79,24 +77,16 @@ class URLBuilder
      *     If it's NULL the default url will be used.
      * @param string|null $state
      * @return string The URL for edit account process.
-     * @throws \Exception
      */
     public static function getUrlEditAccount($scope = null, $urlCallback = null, $state = null)
     {
-        $params = array();
-        $params['client_id'] = Identity::getOAuthConfig()->getClientid();
-        $params['redirect_uri'] = Identity::getOAuthConfig()->getRedirectUrl($urlCallback);
-        $next_url = (Identity::getOAuthConfig()->getEndpointUrl('auth','next_url') . '?' . http_build_query($params));
-        $cancel_url = (Identity::getOAuthConfig()->getEndpointUrl('auth','cancel_url') . '?' . http_build_query($params));
-        unset($params);
-
         return self::buildEditAccountUrl(
-            Identity::getOAuthConfig()->getEndpointUrl('register', 'edit_account_endpoint'),
-            $next_url,
-            $cancel_url,
+            Identity::getOAuthConfig()->getEndpointUrl('auth','authorization_endpoint'),
+            Identity::getOAuthConfig()->getRedirectUrl($urlCallback),
             $scope,
             $state
         );
+
     }
 
     /**
@@ -108,24 +98,24 @@ class URLBuilder
      *     If it's NULL the default url will be used.
      * @param string|null $state
      * @return string The URL for complete process.
-     * @throws \Exception
      */
     public static function getUrlCompleteAccount($scope = null, $urlCallback = null, $state = null)
     {
         $params = array();
         $params['client_id'] = Identity::getOAuthConfig()->getClientid();
         $params['redirect_uri'] = Identity::getOAuthConfig()->getRedirectUrl($urlCallback);
+        if (!is_null($state)) {
+            $params ['state'] = $state;
+        }
         $next_url = Identity::getOAuthConfig()->getEndpointUrl('auth','next_url') . '?' . http_build_query($params);
         $cancel_url = Identity::getOAuthConfig()->getEndpointUrl('auth','cancel_url') . '?' . http_build_query($params);
         unset($params);
 
         return self::buildCompleteAccountUrl(
-            Identity::getOAuthConfig()->getEndpointUrl('register','complete_account_endpoint'),
+            Identity::getOAuthConfig()->getEndpointUrl('ui','complete_account_endpoint'),
             $next_url,
             $cancel_url,
-            $scope,
-            $state
-        );
+            $scope);
     }
 
     /**
@@ -186,9 +176,9 @@ class URLBuilder
         foreach ($userInfo as $field => $value) {
             if (in_array($field, self::$ids)) {
                 $user["ids"][$field] = array("value" => $value);
-            } else if (in_array($field, self::$location)) {
+            } elseif (in_array($field, self::$location)) {
                 $user["location"][$field] = $value;
-            } else if (in_array($field, self::$location_address)) {
+            } elseif (in_array($field, self::$location_address)) {
                 $user["location"]["address"][$field] = $value;
             } else { //is a data
                 $user["datas"][$field] = array("value" => $value);
@@ -196,6 +186,68 @@ class URLBuilder
         }
 
         return json_encode($user);
+    }
+
+    /**
+     *
+     *  Builds default URL to authorization process.
+     *
+     * @param string $endpoint_url The endpoint. Normally the 'authorization_endpoint' of
+     * *     OAuth server.
+     * * @param string $redirect_url Where the user will be redirected, even on success or
+     * *     not.
+     * * @param string $scope Section-key identifier of the web client. The
+     * *     section-key is located in "oauthconf.xml" file.
+     * * @param string $social Social - to force login with social network. Optional. Values 'facebook', 'twitter'
+     * * @param array $prefill
+     * * @param string|null $state
+     * @return string|void The URL generated.
+     * @throws \Exception If there is an error.
+     */
+    private static function buildAuthorizationUrl($endpoint_url, $redirect_url, $method = null, $response_type = null,
+                                                  $scope = null, $social = null, array $prefill = array(), $state = null)
+    {
+        try {
+            if (self::checkParam($endpoint_url)) {
+                throw new Exception ('Endpoint URL is empty');
+            }
+            if (self::checkParam($redirect_url)) {
+                throw new Exception ('Redirect URL is empty');
+            }
+
+            $endpoint_url = rtrim($endpoint_url, '?');
+            $params = array();
+            $params['client_id'] = Identity::getOAuthConfig()->getClientid();
+            $params['redirect_uri'] = $redirect_url;
+
+            if(!empty($method)) {
+                $params['x_method'] = $method;
+            }
+
+            if(!empty($response_type)) {
+                $params['response_type'] = $response_type;
+            }
+
+            if (!empty($scope)) {
+                $params['scope'] = $scope;
+            }
+
+            if (!empty($social)) {
+                $params['gid_auth_provider'] = $social;
+            }
+
+            if (!empty($prefill)) {
+                $params['x_prefill'] = base64_encode(self::arrayToUserJson($prefill));
+            }
+
+            if (!empty($state)) {
+                $params['state'] = $state;
+            }
+
+            return $endpoint_url . '?' . http_build_query($params, "", '&');
+        } catch (Exception $e) {
+            Identity::getLogger()->debug('Error [' . __FUNCTION__ . '] - ' . $e->getMessage());
+        }
     }
 
     /**
@@ -213,101 +265,34 @@ class URLBuilder
      * @return string The URL generated.
      * @throws \Exception If there is an error.
      */
-    private static function buildLoginUrl($endpoint_url, $redirect_url, $scope = null, $social = null, array $prefill = array(), $state = null)
+    private static function buildLoginUrl($endpoint_url, $redirect_url, $scope = null,
+                                          $social = null, array $prefill = array(), $state = null)
     {
-
-        try {
-            if (self::checkParam($endpoint_url)) {
-                throw new Exception ('Endpoint URL is empty');
-            }
-            if (self::checkParam($redirect_url)) {
-                throw new Exception ('Redirect URL is empty');
-            }
-
-            $endpoint_url = rtrim($endpoint_url, '?');
-            $params = array();
-            $params['client_id'] = Identity::getOAuthConfig()->getClientId();
-            $params['redirect_uri'] = $redirect_url;
-            $params['response_type'] = 'code';
-            if (!is_null($scope)) {
-                $params['scope'] = $scope;
-            }
-
-            if ($social != null) {
-                $params['ck_auth_provider'] = $social;
-            }
-
-            if (!empty($prefill)) {
-                $params['x_prefill'] = base64_encode(self::arrayToUserJson($prefill));
-            }
-
-            if (!empty($state)) {
-                $params['state'] = $state;
-            }
-
-            return $endpoint_url . '?' . http_build_query($params, null, '&');
-        } catch (Exception $e) {
-            Identity::getLogger()->debug('Error [' . __FUNCTION__ . '] - ' . $e->getMessage());
-        }
+        return self::buildAuthorizationUrl($endpoint_url, $redirect_url, null,
+            'code', $scope, $social, $prefill, $state);
     }
 
     /**
      * Builds the URL to edit the user's data.
      *
-     * @param string $endpoint_url The endpoint. Normally the 'edit_account_endpoint' of
+     * @param string $endpoint_url The endpoint. Normally the 'authorization_endpoint' of
      *     OAuth server.
-     * @param string $next_url Where the user will be redirected when finished
-     *     editing data.
-     * @param string $cancel_url Where the user will be redirected if the process is
-     *     cancelled.
-     * @param string $scope Section-key identifier of the web client. The
+     * @param $redirect_url
+     * @param null $scope Section-key identifier of the web client. The
      *     section-key is located in "oauthconf.xml" file.
-     * @param string|null $state
+     * @param null $state
      * @return string The URL generated.
-     * @throws \Exception If there is an error.
      */
-    private static function buildEditAccountUrl($endpoint_url, $next_url, $cancel_url, $scope = null, $state = null)
+    private static function buildEditAccountUrl($endpoint_url, $redirect_url, $scope = null, $state = null)
     {
-        try {
-            if (self::checkParam($endpoint_url)) {
-                throw new Exception ('Endpoint URL is empty');
-            }
-            if (self::checkParam($next_url)) {
-                throw new Exception ('Next URL is empty');
-            }
-            if (self::checkParam($cancel_url)) {
-                throw new Exception ('Cancel URL is empty');
-            }
-
-            $access_token = Identity::getThings()->getAccessToken();
-
-            if (is_null($access_token)) {
-                throw new Exception ('Access token is empty');
-            }
-
-            $endpoint_url = rtrim($endpoint_url, '?');
-            $params = array();
-            $params ['next'] = $next_url;
-            $params ['cancel_url'] = $cancel_url;
-            $params ['oauth_token'] = $access_token->getValue();
-            if (!is_null($scope)) {
-                $params ['scope'] = $scope;
-            }
-            if (!is_null($state)) {
-                $params ['state'] = $state;
-            }
-            unset ($access_token);
-
-            return $endpoint_url . '?' . http_build_query($params, null, '&');
-        } catch (Exception $e) {
-            Identity::getLogger()->debug('Error [' . __FUNCTION__ . '] - ' . $e->getMessage());
-        }
+        return self::buildAuthorizationUrl($endpoint_url, $redirect_url, 'edit_account',
+            'none', $scope, null, array(), $state);
     }
 
     /**
      * Builds the URL to sign up process.
      *
-     * @param string $endpoint_url The endpoint. Normally the 'signup_endpoint' of OAuth
+     * @param string $endpoint_url The endpoint. Normally the 'authorization_endpoint' of OAuth
      *     server.
      * @param string $redirect_url Where the user will be redirected, even on success or
      *     not.
@@ -318,33 +303,11 @@ class URLBuilder
      * @return string The URL generated.
      * @throws \Exception If there is an error.
      */
-    private static function buildSignupUrl($endpoint_url, $redirect_url, $scope = null, array $prefill = array(), $state = null)
+    private static function buildSignupUrl($endpoint_url, $redirect_url, $scope = null,
+                                           array $prefill = array(), $state = null)
     {
-        try {
-
-            $url = self::buildLoginUrl($endpoint_url, $redirect_url);
-            if (self::checkParam($url)) {
-                throw new Exception("Can't build sign up URL");
-            }
-
-            $params = array();
-            $params['x_method'] = 'sign_up';
-            if (!is_null($scope)) {
-                $params ['scope'] = $scope;
-            }
-
-            if (!empty($prefill)) {
-                $params['x_prefill'] = base64_encode(self::arrayToUserJson($prefill));
-            }
-
-            if (!is_null($state)) {
-                $params ['state'] = $state;
-            }
-
-            return $url . '&' . http_build_query($params, null, '&');
-        } catch (Exception $e) {
-            Identity::getLogger()->debug('Error [' . __FUNCTION__ . '] - ' . $e->getMessage());
-        }
+        return self::buildAuthorizationUrl($endpoint_url, $redirect_url, 'sign_up',
+            'code', $scope, null, $prefill, $state);
     }
 
     /**
@@ -362,7 +325,7 @@ class URLBuilder
      * @return string The URL generated.
      * @throws \Exception If there is an error.
      */
-    private static function buildCompleteAccountUrl($endpoint_url, $next_url, $cancel_url, $scope, $state = null)
+    private static function buildCompleteAccountUrl($endpoint_url, $next_url, $cancel_url, $scope)
     {
         try {
             if (self::checkParam($endpoint_url)) {
@@ -376,9 +339,9 @@ class URLBuilder
             }
             $access_token = Identity::getThings()->getAccessToken();
 
-            if (is_null($access_token)) {
-                throw new Exception ('Access token is empty');
-            }
+            //if (is_null($access_token)) {
+            //    throw new Exception ('Access token is empty');
+            //}
             if (self::checkParam($scope)) {
                 throw new Exception ('Scope section is empty');
             }
@@ -387,15 +350,13 @@ class URLBuilder
             $params = array();
             $params ['next'] = $next_url;
             $params ['cancel_url'] = $cancel_url;
-            $params ['oauth_token'] = $access_token->getValue();
+            if (!is_null($access_token)) {
+                $params ['oauth_token'] = $access_token->getValue();
+            }
             unset ($access_token);
             $params['scope'] = $scope;
 
-            if (!is_null($state)) {
-                $params ['state'] = $state;
-            }
-
-            return $endpoint_url . '?' . http_build_query($params, null, '&');
+            return $endpoint_url . '?' . http_build_query($params, "", '&');
         } catch (Exception $e) {
             Identity::getLogger()->debug('Error [' . __FUNCTION__ . '] - ' . $e->getMessage());
         }
