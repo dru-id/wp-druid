@@ -12,6 +12,8 @@ class DB
 		$wpdb->druid_user = $wpdb->prefix.'druid_user';
 		$wpdb->druid_log = $wpdb->prefix.'druid_log';
 		$wpdb->druid_error_logs = $wpdb->prefix.'druid_error_logs';
+        $wpdb->druid_config = $wpdb->prefix.'druid_config';
+        $wpdb->druid_promotions = $wpdb->prefix.'promotions';
 	}
 
 	public function check_update()
@@ -40,8 +42,8 @@ class DB
 				);";
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_user." (
-					druid_id VARCHAR(100) NOT NULL,
-					wp_id INT(11)  NOT NULL,
+					druid_id VARCHAR(255) NOT NULL,
+					wp_id BIGINT(20) UNSIGNED NOT NULL,
 					druid_obj TEXT,
 					last_update DATETIME,
 					PRIMARY KEY  (druid_id)
@@ -56,7 +58,27 @@ class DB
 					PRIMARY KEY  (id)
 				);";
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        $sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_config." (					
+					client_id VARCHAR(100) NOT NULL,
+					client_secret VARCHAR(100) NOT NULL,
+					entry_point VARCHAR(1000) NOT NULL,
+					log_level VARCHAR(10) NOT NULL,
+					callback VARCHAR(200),
+					environment VARCHAR(6) NOT NULL,
+					log_path VARCHAR(200) NOT NULL,
+					cache_path VARCHAR(200) NOT NULL,					
+					PRIMARY KEY  (client_id)
+				);";
+
+        $sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_promotions." (					
+					id INT(11) AUTO_INCREMENT NOT NULL,
+					name VARCHAR(100) NOT NULL,
+					entry_point VARCHAR(1000) NOT NULL,				  
+					PRIMARY KEY  (id)
+				);";
+
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		foreach ($sql as $s) {
 			dbDelta($s);
@@ -73,6 +95,8 @@ class DB
 
 		$sql[] = "TRUNCATE TABLE ".$wpdb->druid_log.";";
 		$sql[] = "TRUNCATE TABLE ".$wpdb->druid_error_logs.";";
+        $sql[] = "TRUNCATE TABLE ".$wpdb->druid_config.";";
+        $sql[] = "TRUNCATE TABLE ".$wpdb->druid_promotions.";";
 
 		foreach ( $sql as $s ) {
 			$wpdb->query($s);
@@ -89,6 +113,8 @@ class DB
         $sql[] = "DROP TABLE ".$wpdb->druid_log.";";
         $sql[] = "DROP TABLE ".$wpdb->druid_error_logs.";";
         $sql[] = "DROP TABLE ".$wpdb->druid_user.";";
+        $sql[] = "DROP TABLE ".$wpdb->druid_config.";";
+        $sql[] = "DROP TABLE ".$wpdb->druid_promotions.";";
 
         foreach ( $sql as $s ) {
             $wpdb->query($s);

@@ -7,18 +7,26 @@ if (!isset($data['login_url'])) { $data['login_url'] = '#'; }
 if (!isset($data['register_url'])) { $data['register_url'] = '#'; }
 
 $username = array();
-if (isset($name) && $name) { $username[] = $name; }
-if (isset($surname) && $surname) { $username[] = $surname; }
-$username = trim(implode(' ', $username));
-?><div class="druid-auth-controls">
-    <?php if ($data['is_user_logged']) : ?>
-        <?php if ($username) : ?>
-            <div style="color: black;"><?php echo $username; ?></div>
-        <?php endif; ?>
-        <a href="<?php echo $data['edit_account_url']; ?>" class="druid-auth-control-link druid-login"><?php echo __('Mis datos'); ?></a>
-        <a href="<?php echo $data['logout_url']; ?>" class="druid-auth-control-link druid-logout"><?php echo __('Desconectar'); ?></a>
-    <?php else : ?>
-        <a href="<?php echo $data['login_url']; ?>" class="druid-auth-control-link druid-login"><?php echo __('Login'); ?></a>
-        <a href="<?php echo $data['register_url']; ?>" class="druid-auth-control-link druid-register"><?php echo __('Register'); ?></a>
-    <?php endif; ?>
-</div>
+if (!empty($data['name'])) { $username[] = $data['name']; }
+if (!empty($data['surname'])) { $username[] = $data['surname']; }
+$usernames = trim(implode(' ', $username));
+
+
+echo '<div class="druid-auth-controls">';
+if ($data['is_user_logged']) {
+    if ($usernames)
+        echo '<div class="druid-auth-username">' . $usernames . '</div>';
+
+    echo '<a href="'.$data['edit_account_url'].'" class="druid-auth-control-link druid-login">'.__('Mi Cuenta').'</a>';
+    echo '<a href="'.$data['logout_url'].'" class="druid-auth-control-link druid-logout">'.__('Desconectar').'</a>';
+} else {
+
+    if ($data['show_login'])
+        echo '<a href="' . $data['login_url'] . '" class="druid-auth-control-link druid-login">' . __("Login") . '</a>';
+
+    if ($data['show_register'])
+        echo '<a href="' . $data['register_url'] . '" class="druid-auth-control-link druid-register">' . __('Registro') . '</a>';
+
+}
+echo '</div>';
+

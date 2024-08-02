@@ -21,10 +21,10 @@
         "url": "https://github.com/dru-id/druid-php-sdk"
     }],
     "autoload": {
-        "classmap": ["controllers", "lib"],
+        "classmap": ["lib"],
         "files": [
             "lib/WP_Druid/Utils/helpers.php",
-            "lib/WP_Druid/Collections/actions.php",
-            "lib/WP_Druid/Collections/shortcodes.php"]
+            "lib/WP_Druid/Front/Collections/actions.php"
+        ]
     }
 }

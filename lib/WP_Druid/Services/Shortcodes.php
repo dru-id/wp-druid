@@ -14,7 +14,7 @@ class Shortcodes
     /**
      * Returns the DruId login controls.
      *
-     * User's hooks can be attached to {@link DRUID_AUTH_CONTROLS} to render custom auth controls. These hooks will receive
+     * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS} to render custom auth controls. These hooks will receive
      * an array with the following data:
      *  - is_user_logged (boolean) TRUE if the user is logged, FALSE if not. To show the proper controls.
      *  - name (string) User's name. It could be empty.
@@ -24,6 +24,9 @@ class Shortcodes
      *  - register_url
      *  - edit_account_url
      *  - logout_url
+     *  - show_login (boolean) If show login link with text. Default true
+     *  - show_register (boolean) If show register link with text. Default true
+     *  - get_only_url (string) (login|register) only return login or register link, to use in html links. Default null
      *
      * @param array $attributes If defined accepts:
      *      - entry-point: Entry point identifier.
@@ -34,20 +37,33 @@ class Shortcodes
         ob_start();
 
         try{
-
             $scope = (isset($attributes['entry-point']) && $attributes['entry-point'])
                 ? $attributes['entry-point']
                 : null;
+
+            $state = (isset($attributes['state']) && $attributes['state'])
+                ? $attributes['state']
+                : null;
+
+            $social= (isset($attributes['social']) && $attributes['social']) ? $attributes['social'] : null;
+
+            $locale_param = array('request_locale' => get_locale());
+
             $data = array(
-                'login_url' => URLBuilder::getUrlLogin($scope),
-                'register_url' => URLBuilder::getUrlRegister($scope),
-                'edit_account_url' => URLBuilder::getUrlEditAccount($scope),
-                'logout_url' => '/actions/logout',
+                'login_url' => URLBuilder::getUrlLogin($scope, $social, null, array(), $state).'&'.http_build_query($locale_param, null, '&'),
+                'register_url' => URLBuilder::getUrlRegister($scope, null, array(), $state).'&'.http_build_query($locale_param, null, '&')
             );
+
+            $data['show_login'] = (!empty($attributes['show_login'])) ? filter_var($attributes['show_login'], FILTER_VALIDATE_BOOLEAN) : true;
+            $data['show_register'] = (!empty($attributes['show_register'])) ? filter_var($attributes['show_register'], FILTER_VALIDATE_BOOLEAN) : true;
+            $data['get_only_url'] = (!empty($attributes['get_only_url'])) ? $attributes['get_only_url']: null;
+
             if (Identity::isConnected()) {
                 $data['is_user_logged'] = true;
+                $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope).'&'.http_build_query($locale_param, null, '&');
+                $data['logout_url'] = '/druid-actions/logout';
+
                 $info = UserApi::getUserLogged();
-                //¡¡var_dump($info);
                 if (!is_null($info)) {
                     $data['name'] = (isset($info->user->user_data->name->value) && $info->user->user_data->name->value) ? $info->user->user_data->name->value : '';
                     $data['surname'] = (isset($info->user->user_data->surname->value) && $info->user->user_data->surname->value) ? $info->user->user_data->surname->value : '';
@@ -55,16 +71,22 @@ class Shortcodes
                 }
             } else {
                 $data['is_user_logged'] = false;
-                if (isset($attributes['social']) && $attributes['social']) {
-                    $data['login_url'] = URLBuilder::getUrlLogin($scope, $attributes['social']);
-                }
             }
 
-            // If there is more than one hooks attached to this action then we deletegate render to these hooks,
-            // else we should generate a basic control layer.
-            (druid_count_hooked_functions(DRUID_AUTH_CONTROLS) > 0)
-                ? do_action(DRUID_AUTH_CONTROLS, $data)
-                : Render_Service::render('public/auth-controls', $data);
+            if ($data['get_only_url'] != null) {
+                if ($data['get_only_url'] === 'login') {
+                    echo $data['login_url'];
+                } else {
+                    echo $data['register_url'];
+                }
+            } else {
+                // If there is more than one hooks attached to this action then we deletegate render to these hooks,
+                // else we should generate a basic control layer.
+                (has_action('druid_auth_controls'))
+                    ? do_action('druid_auth_controls', $data)
+                    : Render_Service::render('public/auth-controls', $data);
+            }
+
 
         } catch (\Exception $e) {
 
@@ -74,37 +96,4 @@ class Shortcodes
 
         return ob_get_clean();
     }
-
-    public static function get_custom_link($attributes = array())
-    {
-        ob_start();
-
-        try{
-
-            $text = (isset($attributes['text']) && $attributes['text'])
-                ? $attributes['text']
-                : null;
-            $href = (isset($attributes['href']) && $attributes['href'])
-                ? $attributes['href']
-                : null;
-            $class = (isset($attributes['class']) && $attributes['class'])
-                ? $attributes['class']
-                : null;
-            $data = array(
-                'text' => $text,
-                'href' => $href,
-                'class' => $class
-            );
-
-            Render_Service::render('public/custom-link', $data);
-
-        } catch (\Exception $e) {
-
-            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
-
-        }
-
-        return ob_get_clean();
-    }
-
 }
