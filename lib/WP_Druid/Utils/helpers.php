@@ -30,39 +30,7 @@ if (!defined('WPDR_FUNCTIONS_HELPERS')) {
      */
     function druid_get_current_client ($default_client = 'default')
     {
-        $locale = SessionManager::has(WPDR_CURRENT_LANGUAGE_CODE_SESSION_KEY)
-            ? SessionManager::get(WPDR_CURRENT_LANGUAGE_CODE_SESSION_KEY)
-            : get_locale();
-        if ((strlen($locale) > 2) && preg_match('#^(.{2})_.{2}$#Usi', $locale, $matches) && isset($matches[1])) {
-            $locale = $matches[1];
-        }
-
-        switch($locale) {
-            default:
-            case 'en':
-                return $default_client;
-            case 'es':
-                return 'es';
-        }
-    }
-
-    /**
-     * Counts number of hooked functions to a tag.
-     *
-     * @param string $tag Hook name as string
-     * @return int the number of hooked functions to a specific hook
-     * @author Ohad Raz
-     * @see http://wordpress.stackexchange.com/questions/77050/how-to-count-number-of-functions-attached-to-an-action-hook
-     */
-    function druid_count_hooked_functions ($tag = '')
-    {
-        global $wp_filter;
-        if ($tag){
-            if (isset($wp_filter[$tag])){
-                return count($wp_filter[$tag]);
-            }
-        }
-        return 0;
+        return $default_client;
     }
 
     /**
@@ -78,8 +46,9 @@ if (!defined('WPDR_FUNCTIONS_HELPERS')) {
     /**
      * Checks if the user should complete its data.
      *
-     * @param string|null $scope
+     * @param null $scope
      * @return boolean TRUE if there are data to be fulfilled or FALSE if everything is OK.
+     * @throws Exception
      */
     function druid_should_user_completed_account($scope = null)
     {
@@ -91,6 +60,7 @@ if (!defined('WPDR_FUNCTIONS_HELPERS')) {
      *
      * @param string $scope
      * @return boolean TRUE if the user need to accept terms and conditions or FALSE if it has already accepted.
+     * @throws Exception
      */
     function druid_should_user_accept_terms_and_conditions($scope)
     {

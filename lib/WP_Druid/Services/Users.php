@@ -78,8 +78,8 @@ class Users
         // User's email.
         if (isset($druid_user_data->user->user_ids->email->value) && $druid_user_data->user->user_ids->email->value
             && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed) {
-            //$temp = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
-            $temp = $druid_user_data->user->oid . '@dru-id.internal';
+
+            $temp = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
         } else {
             $temp = md5(microtime(true)) . '@' . md5(microtime(true)) . '.com';
         }
@@ -205,8 +205,7 @@ class Users
             && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed
             && ($druid_user_data->user->user_ids->email->value != $wp_user->user_email)) {
 
-            //$wp_user->user_email = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
-            $wp_user->user_email = $druid_user_data->user->oid . '@dru-id.internal';
+            $wp_user->user_email = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
             $update_user_data = true;
         }
 
