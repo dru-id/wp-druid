@@ -1,6 +1,6 @@
 {
   "name": "druid/php-sdk",
-  "version": "1.0.3",
+  "version": "1.1.1",
   "description": "DRUID SDK for PHP",
   "license": "Apache-2.0",
   "minimum-stability": "dev",
@@ -11,13 +11,16 @@
     "php"
   ],
   "type": "library",
-  "homepage": "http://developers.dru-id.com/",
+  "homepage": "https://dru-id.com/developers",
   "authors": [
     {
       "name": "dru-id",
       "homepage": "https://github.com/dru-id/druid-php-sdk/graphs/contributors"
     }
   ],
+  "require-dev": {
+    "phpunit/phpunit": "9.*"
+  },
   "require": {
     "lib-curl": "*",
     "ext-dom": "*"
@@ -27,7 +30,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Genetsis\\": "src"
+      "Genetsis\\": "src",
+      "Genetsis\\Tests\\" : "test/"
     }
   },
   "scripts": {
