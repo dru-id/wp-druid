@@ -19,7 +19,7 @@ services:
       MYSQL_PASSWORD: "3qrZTF3?vhZj+e&-"
   wp:
     restart: unless-stopped
-    image: "wordpress:6.4.3-php8.1-apache"
+    image: "wordpress:6.6.1-php8.1-apache"
     container_name: wog-wp
     volumes:
       - ./backup/src/var/www/html/wp-content:/var/www/html/wp-content

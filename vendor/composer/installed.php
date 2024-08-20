@@ -19,17 +19,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'druid/php-sdk' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => 'd51f00763599a806e95f36d7ef37b5b4096c3ab3',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../druid/php-sdk',
-            'aliases' => array(
-                0 => '9999999-dev',
-            ),
-            'dev_requirement' => false,
-        ),
         'guzzlehttp/guzzle' => array(
             'pretty_version' => '7.9.2',
             'version' => '7.9.2.0',

@@ -10,16 +10,12 @@
 
     "minimum-stability": "stable",
     "require": {
-        "druid/php-sdk": "dev-master",
         "monolog/monolog": "1.*",
         "php-console/php-console": "~3.0",
         "hashids/hashids": "1.*",
         "guzzlehttp/guzzle": "^7.0"
     },
-    "repositories": [{
-        "type": "vcs",
-        "url": "https://github.com/dru-id/druid-php-sdk"
-    }],
+    "repositories": [],
     "autoload": {
         "classmap": ["lib"],
         "files": [
