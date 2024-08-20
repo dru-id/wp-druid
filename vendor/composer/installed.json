@@ -1,66 +1,6 @@
 {
         "packages": [
                 {
-                        "name": "druid/php-sdk",
-                        "version": "dev-master",
-                        "version_normalized": "dev-master",
-                        "source": {
-                                "type": "git",
-                                "url": "https://github.com/dru-id/druid-php-sdk.git",
-                                "reference": "d51f00763599a806e95f36d7ef37b5b4096c3ab3"
-                        },
-                        "dist": {
-                                "type": "zip",
-                                "url": "https://api.github.com/repos/dru-id/druid-php-sdk/zipball/d51f00763599a806e95f36d7ef37b5b4096c3ab3",
-                                "reference": "d51f00763599a806e95f36d7ef37b5b4096c3ab3",
-                                "shasum": ""
-                        },
-                        "require": {
-                                "ext-dom": "*",
-                                "lib-curl": "*"
-                        },
-                        "require-dev": {
-                                "phpunit/phpunit": "9.*"
-                        },
-                        "time": "2024-03-05T15:07:04+00:00",
-                        "default-branch": true,
-                        "type": "library",
-                        "installation-source": "source",
-                        "autoload": {
-                                "psr-4": {
-                                        "Genetsis\\": "src",
-                                        "Genetsis\\Tests\\": "test/"
-                                }
-                        },
-                        "scripts": {
-                                "post-create-project-cmd": [
-                                        "php -r \"mkdir('src/main/php/lib', 0777, true);\""
-                                ]
-                        },
-                        "license": [
-                                "Apache-2.0"
-                        ],
-                        "authors": [
-                                {
-                                        "name": "dru-id",
-                                        "homepage": "https://github.com/dru-id/druid-php-sdk/graphs/contributors"
-                                }
-                        ],
-                        "description": "DRUID SDK for PHP",
-                        "homepage": "https://dru-id.com/developers",
-                        "keywords": [
-                                "dru-id",
-                                "druid",
-                                "php",
-                                "sdk"
-                        ],
-                        "support": {
-                                "source": "https://github.com/dru-id/druid-php-sdk/tree/master",
-                                "issues": "https://github.com/dru-id/druid-php-sdk/issues"
-                        },
-                        "install-path": "../druid/php-sdk"
-                },
-                {
                         "name": "guzzlehttp/guzzle",
                         "version": "7.9.2",
                         "version_normalized": "7.9.2.0",

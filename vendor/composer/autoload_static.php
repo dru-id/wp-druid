@@ -31,8 +31,6 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
-            'Genetsis\\Tests\\' => 15,
-            'Genetsis\\' => 9,
         ),
     );
 
@@ -69,14 +67,6 @@ class ComposerStaticInit5dd35187e4fcaaf63de4a4ec0842665e
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
-        ),
-        'Genetsis\\Tests\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/druid/php-sdk/test',
-        ),
-        'Genetsis\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/druid/php-sdk/src',
         ),
     );
 
