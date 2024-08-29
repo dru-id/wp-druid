@@ -19,8 +19,8 @@ class IdentityFactory {
             $druid_config = OAuthConfig::init()->setClientId($wp_config->getClientId())
                 ->setClientSecret($wp_config->getClientSecret())
                 ->setEnvironment(strtolower($wp_config->getEnvironment()))
-                ->setCallback($wp_config->getCallback())
                 ->setEntryPoints(array($wp_config->getEntryPoint()))
+                ->setCallback($wp_config->getCallback() ?: self::get_url_callback())
                 ->setCachePath($wp_config->getCachePath())
                 ->setLogPath($wp_config->getLogPath())
                 ->setLogLevel(strtoupper($wp_config->getLogLevel()))
@@ -32,4 +32,13 @@ class IdentityFactory {
             Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
         }
     }
+
+    static function get_url_callback(): string
+    {
+        $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'
+            || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+        $domain = $_SERVER['HTTP_HOST'];
+        return $protocolo . $domain . '/actions/callback';
+    }
+
 }

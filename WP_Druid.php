@@ -57,6 +57,7 @@ class WP_Druid
     private function setup_shortcodes()
     {
         add_shortcode('druid_auth_controls', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls'));
+        add_shortcode('druid_auth_controls_login', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls_login'));
     }
 }
 

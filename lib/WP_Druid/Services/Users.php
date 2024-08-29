@@ -79,14 +79,14 @@ class Users
         if (isset($druid_user_data->user->user_ids->email->value) && $druid_user_data->user->user_ids->email->value
             && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed) {
 
-            $temp = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
+            $temp = $druid_user_data->user->oid . '@dru-id.internal';
         } else {
             $temp = md5(microtime(true)) . '@' . md5(microtime(true)) . '.com';
         }
         $wp_user_data['user_email'] = $temp;
 
         // Generates a random username.
-        $temp = 'wdr-'.druid_x(new Hashids())->encode($druid_user_data->user->id);
+        $temp = 'wdr-'.druid_x(new Hashids())->encode($druid_user_data->user->oid);
         while(username_exists($temp)) {
             $temp = $temp . rand(0,9);
         }
@@ -105,14 +105,20 @@ class Users
 
         // Display name.
         $temp = trim($wp_user_data['first_name'].' '.$wp_user_data['last_name']);
-        $wp_user_data['display_name'] = $temp ? $temp : $wp_user_data['user_login'];
+        $wp_user_data['display_name'] = $temp ?: $wp_user_data['user_login'];
 
         // Note: roles logic will be delegated to the site logic. See WPDR_ACTION_POST_REGISTER.
+        $wp_user = get_user_by('email', $wp_user_data['user_email']);
 
-        $wp_user_id = wp_insert_user($wp_user_data);
-        if ($wp_user_id instanceof \WP_Error) {
-            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $wp_user_id);
-            throw new Create_User_Exception(__('We have had problems registering on the web.', WPDR_LANG_NS));
+        if (!$wp_user) {
+            $wp_user_id = wp_insert_user($wp_user_data);
+            if ($wp_user_id instanceof \WP_Error) {
+                Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $wp_user_id);
+                throw new Create_User_Exception(__('We have had problems registering on the web.', WPDR_LANG_NS));
+            }
+        } else {
+            // Si ya existe el usuario, obtenemos su ID
+            $wp_user_id = $wp_user->ID;
         }
 
         do_action(WPDR_ACTION_POST_REGISTER, array('wp_user_id' => $wp_user_id, 'druid_user' => $druid_user_data));
@@ -205,7 +211,7 @@ class Users
             && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed
             && ($druid_user_data->user->user_ids->email->value != $wp_user->user_email)) {
 
-            $wp_user->user_email = str_replace('@', '__at__', $druid_user_data->user->user_ids->email->value) . '@dru-id.com';
+            $wp_user->user_email = $druid_user_data->user->oid . '@dru-id.internal';
             $update_user_data = true;
         }
 
