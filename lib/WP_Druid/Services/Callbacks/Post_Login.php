@@ -46,18 +46,12 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
             } else {
                 // Because DruID does not tell us which was the action made by the user then if there is no CODE defined we have to suppose
                 // that user has come from the registration process.
-                //TODO: get scope from state
                 if ($code) {
                     Identity::authorizeUser($code, $scope);
                     if (!Identity::isConnected()) {
                         throw new Callback_Exception(__('We cannot authorize the user with the current code.', WPDR_LANG_NS));
                     }
                     Users_Service::login(UserApi::getUserLogged());
-
-                    if(!Identity::checkUserComplete($scope)) {
-                        wp_safe_redirect(URLBuilder::getUrlCompleteAccount($scope, null, $state));
-                        exit();
-                    }
                 }
             }
         } catch (Create_User_Exception $e) {
@@ -65,11 +59,10 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
         } catch (Login_User_Exception $e) {
             Render_Service::render('public/error-page', array('message' => $e->getMessage())); // This view ends WP.
         } catch (\Exception $e) {
-            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e->getMessage());
             Render_Service::render('public/error-page', array('message' => __('An unknown error prevented us to identify you on the platform. Please try again.', WPDR_LANG_NS))); // This view ends WP.
         }
 
-        wp_safe_redirect(SessionManager::get_and_forget(WPDR_CUSTOM_RETURN_URL_SESSION_KEY, SessionManager::get_and_forget(WPDR_PREVIOUS_URL_SESSION_KEY, home_url())));
+        wp_safe_redirect(SessionManager::get_and_forget(WPDR_PREVIOUS_URL_SESSION_KEY, home_url()));
         exit();
     }
 }

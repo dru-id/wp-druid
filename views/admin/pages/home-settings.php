@@ -36,14 +36,13 @@
                         <option value="prod" <?php echo ($actual_config->getEnvironment()=='prod') ? 'selected' : ''; ?>>Prod</option>
                     </select>
                 </div>
-
                 <div class="form-field form-required">
                     <label for="entry_points">Entry Point</label>
                     <input name="entry_points" id="entry_points" type="text" value="<?php echo $actual_config->getEntryPoint(); ?>" size="40" aria-required="true" class="form-required">
                 </div>
-                <div class="form-field form-required">
-                    <label for="callback">Callback</label>
-                    <input name="callback" id="callback" type="text" value="<?php echo $actual_config->getCallback(); ?>" size="60" aria-required="true" maxlength="200" class="form-required">
+                <div class="form-field">
+                    <label for="callback">Callback (Optional: Default: http(s)://{my-domain}/actions/callback)</label>
+                    <input name="callback" id="callback" type="text" value="<?php echo $actual_config->getCallback(); ?>" size="60" maxlength="200">
                 </div>
                 <div class="form-field form-required">
                     <label for="log_path">Log Path</label>

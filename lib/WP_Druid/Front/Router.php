@@ -6,6 +6,7 @@ use WP_Druid\Services\Callbacks\Logout;
 use WP_Druid\Services\Callbacks\Post_Login;
 use WP_Druid\Services\Callbacks\Pub_Sub_Hubbub;
 use WP_Druid\Utils\Session\Services\SessionManager;
+use WP_Druid\Services\Errors as Errors_Service;
 
 
 /**
@@ -57,7 +58,7 @@ class Router
                     }
 
                     // Save current URL to redirect user after Druid action (post-login, logout, ...)
-                    SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url(add_query_arg(null, null))));
+                    SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url($_SERVER['REQUEST_URI'])));
 
                 } catch (\Exception $e) {
 
