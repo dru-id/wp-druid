@@ -58,6 +58,9 @@ class WP_Druid
     {
         add_shortcode('druid_auth_controls', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls'));
         add_shortcode('druid_auth_controls_login', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls_login'));
+        add_shortcode('druid_auth_controls_register', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls_register'));
+        add_shortcode('druid_auth_controls_edit_account', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls_edit_account'));
+        add_shortcode('druid_auth_controls_logout', array('\WP_Druid\Services\Shortcodes', 'get_druid_auth_controls_logout'));
     }
 }
 

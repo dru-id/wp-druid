@@ -17,7 +17,7 @@ if ($data['is_user_logged']) {
     if ($usernames)
         echo '<div class="druid-auth-username">' . $usernames . '</div>';
 
-    echo '<a href="'.$data['edit_account_url'].'" class="druid-auth-control-link druid-login">'.__('Mi Cuenta').'</a>';
+    echo '<a href="'.$data['edit_account_url'].'" class="druid-auth-control-link druid-edit-account">'.__('Mi Cuenta').'</a>';
     echo '<a href="'.$data['logout_url'].'" class="druid-auth-control-link druid-logout">'.__('Desconectar').'</a>';
 } else {
 
