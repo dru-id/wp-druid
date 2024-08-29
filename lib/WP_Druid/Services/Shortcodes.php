@@ -108,6 +108,9 @@ class Shortcodes
      * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_LOGIN} to render custom auth controls.
      * @param array $attributes If defined accepts:
      *      - entrypoint: Entrypoint identifier.
+     *      - text: link text
+     *      - urlToRedirect: URL to redirect after callback
+     *      - state: state to keep after callback
      * @return string
      */
     public static function get_druid_auth_controls_login($attributes = array())
@@ -119,18 +122,7 @@ class Shortcodes
                 ? $attributes['entrypoint']
                 : null;
 
-            $state_attr = (isset($attributes['state']) && $attributes['state'])
-                ? $attributes['state']
-                : null;
-            $pageToRedirect = (isset($attributes['pageToRedirect']) && $attributes['pageToRedirect'])
-                ? $attributes['pageToRedirect']
-                : null;
-            $data = array(
-                'pageToRedirect' => $pageToRedirect,
-                'state' => $state_attr
-            );
-            $json_data = json_encode($data);
-            $state = base64_encode($json_data);
+            $state = self::create_encoded_state($attributes);
 
             $social = (isset($attributes['social']) && $attributes['social']) ? $attributes['social'] : null;
 
@@ -160,5 +152,33 @@ class Shortcodes
         }
 
         return ob_get_clean();
+    }
+
+    private static function create_encoded_state($attributes)
+    {
+        $state_attr = (isset($attributes['state']) && $attributes['state'])
+            ? $attributes['state']
+            : null;
+        $urlToRedirect = (isset($attributes['url-to-redirect']) && $attributes['url-to-redirect'])
+            ? $attributes['url-to-redirect']
+            : null;
+
+        error_log("STATE". $state_attr);
+        error_log("urlToRedirect". $urlToRedirect);
+
+        $encoded_state = null;
+
+        if ($state_attr || $urlToRedirect) {
+            $state_data = array(
+                'pageToRedirect' => $urlToRedirect,
+                'state' => $state_attr
+            );
+            $json_data = json_encode($state_data);
+            $encoded_state = base64_encode($json_data);
+        }
+
+        error_log("ENCODED STATE:". $encoded_state);
+
+        return $encoded_state;
     }
 }

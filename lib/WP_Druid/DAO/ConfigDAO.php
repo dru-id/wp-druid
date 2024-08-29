@@ -45,6 +45,11 @@ class ConfigDAO extends DAO
         return $this->setConfig($result);
     }
 
+    public function getLogLevel() {
+        $query = "SELECT log_level FROM " . $this->getFullTableName() . " LIMIT 1";
+        return $this->getWpdb()->get_var($query);
+    }
+
     private function setConfig($result){
         $druid_config = new Config();
         if ($result != null) {
