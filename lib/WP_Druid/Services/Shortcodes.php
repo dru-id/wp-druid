@@ -41,9 +41,7 @@ class Shortcodes
                 ? $attributes['entrypoint']
                 : null;
 
-            $state = (isset($attributes['state']) && $attributes['state'])
-                ? $attributes['state']
-                : null;
+            $state = self::create_encoded_state($attributes);
 
             $social= (isset($attributes['social']) && $attributes['social']) ? $attributes['social'] : null;
 
@@ -103,7 +101,7 @@ class Shortcodes
     }
 
     /**
-     * Returns the DruId login controls.
+     * Returns the DruId login control.
      *
      * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_LOGIN} to render custom auth controls.
      * @param array $attributes If defined accepts:
@@ -154,6 +152,147 @@ class Shortcodes
         return ob_get_clean();
     }
 
+    /**
+     * Returns the DruId register control.
+     *
+     * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_REGISTER} to render custom auth controls.
+     * @param array $attributes If defined accepts:
+     *      - entrypoint: Entrypoint identifier.
+     *      - text: link text
+     *      - urlToRedirect: URL to redirect after callback
+     *      - state: state to keep after callback
+     * @return string
+     */
+    public static function get_druid_auth_controls_register($attributes = array())
+    {
+        ob_start();
+
+        try {
+            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
+                ? $attributes['entrypoint']
+                : null;
+
+            $state = self::create_encoded_state($attributes);
+
+            $locale_param = array('request_locale' => get_locale());
+
+            $data = array(
+                'register_url' => URLBuilder::getUrlRegister($scope, null, array(), $state)
+                    .'&'.http_build_query($locale_param, '', '&')
+            );
+
+            $data['is_user_logged'] = Identity::isConnected();
+
+            $data['text'] = (isset($attributes['text']) && $attributes['text'])
+                ? $attributes['text']
+                : null;
+
+            // If there is more than one hooks attached to this action then we deletegate render to these hooks,
+            // else we should generate a basic control layer.
+            (has_action('druid_auth_controls_register'))
+                ? do_action('druid_auth_controls_register', $data)
+                : Render_Service::render('public/auth-controls-register', $data);
+
+        } catch (\Exception $e) {
+
+            Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
+
+        }
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Returns the DruId edit account control.
+     *
+     * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_EDIT_ACCOUNT} to render custom auth controls.
+     * @param array $attributes If defined accepts:
+     *      - entrypoint: Entrypoint identifier.
+     *      - text: link text
+     *      - urlToRedirect: URL to redirect after callback
+     *      - state: state to keep after callback
+     * @return string
+     */
+    public static function get_druid_auth_controls_edit_account($attributes = array())
+    {
+        ob_start();
+
+        try {
+            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
+                ? $attributes['entrypoint']
+                : null;
+
+            $state = self::create_encoded_state($attributes);
+
+            $locale_param = array('request_locale' => get_locale());
+
+            $data = array(
+                $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
+                    .http_build_query($locale_param, null, '&')
+            );
+
+            $data['is_user_logged'] = Identity::isConnected();
+
+            $data['text'] = (isset($attributes['text']) && $attributes['text'])
+                ? $attributes['text']
+                : null;
+
+            // If there is more than one hooks attached to this action then we deletegate render to these hooks,
+            // else we should generate a basic control layer.
+            (has_action('druid_auth_controls_edit_account'))
+                ? do_action('druid_auth_controls_edit_account', $data)
+                : Render_Service::render('public/auth-controls-edit-account', $data);
+
+        } catch (\Exception $e) {
+
+            Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
+
+        }
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Returns the DruId logout control.
+     *
+     * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_LOGOUT} to render custom auth controls.
+     * @param array $attributes If defined accepts:
+     *      - entrypoint: Entrypoint identifier.
+     *      - text: link text
+     *      - urlToRedirect: URL to redirect after callback
+     *      - state: state to keep after callback
+     * @return string
+     */
+    public static function get_druid_auth_controls_logout($attributes = array())
+    {
+        ob_start();
+
+        try {
+            $data = array(
+                $data['logout_url'] = '/druid-actions/logout'
+            );
+
+            $data['is_user_logged'] = Identity::isConnected();
+
+            $data['text'] = (isset($attributes['text']) && $attributes['text'])
+                ? $attributes['text']
+                : null;
+
+            // If there is more than one hooks attached to this action then we deletegate render to these hooks,
+            // else we should generate a basic control layer.
+            (has_action('druid_auth_controls_logout'))
+                ? do_action('druid_auth_controls_logout', $data)
+                : Render_Service::render('public/auth-controls-logout', $data);
+
+        } catch (\Exception $e) {
+
+            Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
+
+        }
+
+        return ob_get_clean();
+    }
+
     private static function create_encoded_state($attributes)
     {
         $state_attr = (isset($attributes['state']) && $attributes['state'])
@@ -162,9 +301,6 @@ class Shortcodes
         $urlToRedirect = (isset($attributes['url-to-redirect']) && $attributes['url-to-redirect'])
             ? $attributes['url-to-redirect']
             : null;
-
-        error_log("STATE". $state_attr);
-        error_log("urlToRedirect". $urlToRedirect);
 
         $encoded_state = null;
 
@@ -176,8 +312,6 @@ class Shortcodes
             $json_data = json_encode($state_data);
             $encoded_state = base64_encode($json_data);
         }
-
-        error_log("ENCODED STATE:". $encoded_state);
 
         return $encoded_state;
     }
