@@ -1,5 +1,6 @@
 <?php namespace WP_Druid\Services;
 
+use WP_Druid\DAO\ConfigDAO;
 use WP_Error;
 
 /**
@@ -29,7 +30,10 @@ class Errors
      */
     public static function log_error($section, $error)
     {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
+
+        $dao_config = new ConfigDAO();
+
+        if (defined('WP_DEBUG') || in_array($dao_config->getLogLevel(), ['Debug', 'Error'], true)) {
             if ($error instanceof WP_Error) {
                 $code = $error->get_error_code();
                 $message = $error->get_error_message();
