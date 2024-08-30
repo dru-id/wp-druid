@@ -257,10 +257,7 @@ class Shortcodes
      *
      * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_LOGOUT} to render custom auth controls.
      * @param array $attributes If defined accepts:
-     *      - entrypoint: Entrypoint identifier.
      *      - text: link text
-     *      - urlToRedirect: URL to redirect after callback
-     *      - state: state to keep after callback
      * @return string
      */
     public static function get_druid_auth_controls_logout($attributes = array())
