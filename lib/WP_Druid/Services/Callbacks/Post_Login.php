@@ -30,6 +30,7 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
             // Checks if the service has an error after login.
             $error = Query_Vars_Service::find(Post_Login_Parameters::ERROR, null);
             if ($error) {
+                Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'Error in callback: ' . $error);
                 throw new Callback_Exception($error);
             }
 
@@ -59,8 +60,10 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
                 }
             }
         } catch (Create_User_Exception|Login_User_Exception $e) {
+            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e->getMessage());
             Render_Service::render('public/error-page', array('message' => $e->getMessage())); // This view ends WP.
         } catch (\Exception $e) {
+            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
             Render_Service::render('public/error-page', array('message' => __('An unknown error prevented us to identify you on the platform. Please try again.', WPDR_LANG_NS))); // This view ends WP.
         }
 
