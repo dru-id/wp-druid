@@ -226,12 +226,10 @@ class Shortcodes
 
             $locale_param = array('request_locale' => get_locale());
 
-            $data = array(
-                $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
-                    .http_build_query($locale_param, null, '&')
-            );
-
             $data['is_user_logged'] = Identity::isConnected();
+
+            $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
+                .http_build_query($locale_param, null, '&');
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
@@ -265,11 +263,9 @@ class Shortcodes
         ob_start();
 
         try {
-            $data = array(
-                $data['logout_url'] = '/druid-actions/logout'
-            );
-
             $data['is_user_logged'] = Identity::isConnected();
+
+            $data['logout_url'] = '/druid-actions/logout';
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
