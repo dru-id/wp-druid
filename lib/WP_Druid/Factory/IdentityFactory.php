@@ -29,7 +29,8 @@ class IdentityFactory {
             Identity::init($druid_config, $sync);
 
         } catch (\Exception $e) {
-            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
+            error_log(__CLASS__.' ('.__LINE__.')'. $e->getMessage());
+//            Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
         }
     }
 

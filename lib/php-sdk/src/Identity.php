@@ -112,7 +112,7 @@ class Identity
                 }
             }
         } catch (Exception $e) {
-            self::$logger->error($e->getMessage());
+//            self::$logger->error($e->getMessage());
             throw $e;
         }
     }
