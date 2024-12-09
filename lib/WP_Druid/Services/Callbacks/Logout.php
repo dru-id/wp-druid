@@ -22,8 +22,6 @@ class Logout extends Callback_Base_Service implements CallbackContract
         // WP logout.
         Users_Service::logout();
 
-        error_log("logout redirect: " . WPDR_PREVIOUS_URL_SESSION_KEY);
-
         wp_safe_redirect(SessionManager::get_and_forget(WPDR_PREVIOUS_URL_SESSION_KEY, home_url()));
         exit();
     }
