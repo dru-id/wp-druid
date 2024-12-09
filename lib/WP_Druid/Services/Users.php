@@ -40,7 +40,7 @@ class Users
                 $remember_users_session = true; // TODO: Should we keep user logged between sessions?
                 wp_set_current_user($wp_user->ID, $wp_user->user_login);
                 wp_set_auth_cookie($wp_user->ID, $remember_users_session);
-                do_action('wp_login', $wp_user->user_login);
+                do_action('wp_login', $wp_user->user_login, $wp_user);
             } else {
                 $wp_user_id = static::create($druid_user_data);
                 $wp_user_data = get_user_by('id', $wp_user_id);
@@ -50,7 +50,7 @@ class Users
                 $remember_users_session = true; // TODO: Should we keep user logged between sessions?
                 wp_set_current_user($wp_user_data->ID, $wp_user_data->user_login);
                 wp_set_auth_cookie($wp_user_data->ID, $remember_users_session);
-                do_action('wp_login', $wp_user_data->user_login);
+                do_action('wp_login', $wp_user_data->user_login, $wp_user_data);
             }
         } catch (Create_User_Exception $e) {
             throw $e;

@@ -46,6 +46,7 @@ class Errors
             }
 
             global $wpdb;
+            $wpdb->druid_error_logs = $wpdb->prefix . 'druid_error_logs';
             $wpdb->insert(
                 $wpdb->druid_error_logs,
                 array(
