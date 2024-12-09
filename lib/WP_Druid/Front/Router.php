@@ -1,5 +1,7 @@
 <?php namespace WP_Druid\Front;
 
+use Genetsis\Identity;
+use WP_Druid\Factory\IdentityFactory;
 use WP_Druid\Front\Collections\Callbacks\Post_Login_Parameters;
 use WP_Druid\Front\Collections\Router\Router_Parameters;
 use WP_Druid\Services\Callbacks\Logout;
@@ -40,8 +42,14 @@ class Router
 
                     switch ($action) {
                         case Router_Parameters::ACTION_USER_CANCEL: // When users push back buttons.
-                            wp_safe_redirect(SessionManager::get_and_forget(WPDR_PREVIOUS_URL_SESSION_KEY, home_url()));
-                            exit();
+                            IdentityFactory::init(true);
+                            if(!Identity::isConnected() && is_user_logged_in()) {
+                                druid_x(new Logout())->run();
+                            } else {
+                                wp_safe_redirect(SessionManager::get_and_forget(WPDR_PREVIOUS_URL_SESSION_KEY, home_url()));
+                                exit();
+
+                            }
                             break;
 
                         case Router_Parameters::ACTION_POSTLOGIN:
