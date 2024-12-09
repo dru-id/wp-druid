@@ -13,7 +13,6 @@ class DB
 		$wpdb->druid_log = $wpdb->prefix.'druid_log';
 		$wpdb->druid_error_logs = $wpdb->prefix.'druid_error_logs';
         $wpdb->druid_config = $wpdb->prefix.'druid_config';
-        $wpdb->druid_promotions = $wpdb->prefix.'promotions';
 	}
 
 	public function check_update()
@@ -70,14 +69,6 @@ class DB
 					PRIMARY KEY  (client_id)
 				);";
 
-        $sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_promotions." (					
-					id INT(11) AUTO_INCREMENT NOT NULL,
-					name VARCHAR(100) NOT NULL,
-					entry_point VARCHAR(1000) NOT NULL,				  
-					PRIMARY KEY  (id)
-				);";
-
-
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		foreach ($sql as $s) {
@@ -96,7 +87,6 @@ class DB
 		$sql[] = "TRUNCATE TABLE ".$wpdb->druid_log.";";
 		$sql[] = "TRUNCATE TABLE ".$wpdb->druid_error_logs.";";
         $sql[] = "TRUNCATE TABLE ".$wpdb->druid_config.";";
-        $sql[] = "TRUNCATE TABLE ".$wpdb->druid_promotions.";";
 
 		foreach ( $sql as $s ) {
 			$wpdb->query($s);
@@ -114,7 +104,6 @@ class DB
         $sql[] = "DROP TABLE ".$wpdb->druid_error_logs.";";
         $sql[] = "DROP TABLE ".$wpdb->druid_user.";";
         $sql[] = "DROP TABLE ".$wpdb->druid_config.";";
-        $sql[] = "DROP TABLE ".$wpdb->druid_promotions.";";
 
         foreach ( $sql as $s ) {
             $wpdb->query($s);
