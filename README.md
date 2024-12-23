@@ -36,16 +36,13 @@ Debe obtenerse cierta información del Cockpit de DruID identity para configurar
 5. **Entrypoint**  
    Punto de entrada por defecto de la instalación de DruID. Este valor puede ser sobreescrito en los enlaces individuales de login, registro, etc.
 
-6. **Callback**  
-   El plugin define este valor por defecto a `/actions/callback`, por lo que en principio no es necesario modificarlo. Es opcional.
-
-7. **Log Path**  
+6. **Log Path**  
    Ruta relativa al `Document Root` donde se almacenarán los logs del plugin.
 
-8. **Cache Path**  
+7. **Cache Path**  
    Ruta relativa al `Document Root` donde se almacenará la caché del plugin.
 
-9. **Log Level**  
+8. **Log Level**  
    Nivel de trazas que se imprimirán, tanto en la sección de logs como en las tablas `wp_druid_error_logs` y `wp_druid_log`.
 
 ## Logs del Plugin

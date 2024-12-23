@@ -40,10 +40,6 @@
                     <label for="entry_points">Entry Point</label>
                     <input name="entry_points" id="entry_points" type="text" value="<?php echo $actual_config->getEntryPoint(); ?>" size="40" aria-required="true" class="form-required">
                 </div>
-                <div class="form-field">
-                    <label for="callback">Callback (Optional: Default: http(s)://{my-domain}/actions/callback)</label>
-                    <input name="callback" id="callback" type="text" value="<?php echo $actual_config->getCallback(); ?>" size="60" maxlength="200">
-                </div>
                 <div class="form-field form-required">
                     <label for="log_path">Log Path</label>
                     <input name="log_path" id="log_path" type="text" value="<?php echo $actual_config->getLogPath(); ?>" size="60" aria-required="true" maxlength="200" class="form-required">

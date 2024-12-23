@@ -122,6 +122,7 @@ class Config
         return $this;
     }
 
+    //TODO Quitar Callback de la configuración, debe ser siempre el de por defecto.
     /**
      * @return String
      */
