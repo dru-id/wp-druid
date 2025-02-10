@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
+    container_name: wog-db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backup/sql:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    working_dir: "/docker-entrypoint-initdb.d"
+    ports:
+      - "${PUBLISH_DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  wp:
+    restart: unless-stopped
+    image: "wordpress:6.6.1-php8.1-apache"
+    container_name: wog-wp
+    volumes:
+      - ./backup/src/var/www/html/wp-content:/var/www/html/wp-content
+      - ./backup/src/var/www/settings:/var/www/settings
+      - ./backup/src/var/www/html/wp-druid-files:/var/www/html/wp-druid-files
+    ports:
+      - "80:80"
+    environment:
+      #      VIRTUAL_HOST: wogcorp.com,www.wogcorp.com
+      #      LETSENCRYPT_HOST: wogcorp.com,www.wogcorp.com
+      #      LETSENCRYPT_EMAIL: devops@dru-id.com
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+    links:
+      - db
+volumes:
+  db_data: {}
