@@ -207,10 +207,9 @@ class Users
             $update_user_data = true;
         }
 
-        if (isset($druid_user_data->user->user_ids->email->value) && $druid_user_data->user->user_ids->email->value
-            && isset($druid_user_data->user->user_ids->email->confirmed) && $druid_user_data->user->user_ids->email->confirmed
-            && ($druid_user_data->user->user_ids->email->value != $wp_user->user_email)) {
-
+        $wp_user_mail = $druid_user_data->user->oid . '@dru-id.internal';
+        if (isset($druid_user_data->user->oid) && $druid_user_data->user->oid
+            && ($druid_user_data->user->user_ids->email->value != $wp_user_mail)) {
             $wp_user->user_email = $druid_user_data->user->oid . '@dru-id.internal';
             $update_user_data = true;
         }
