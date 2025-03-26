@@ -68,7 +68,7 @@ El plugin funciona mediante **Shortcodes**, los cuales permiten inyectar los enl
 
    **Parámetros:**
      - `entrypoint`: Define el punto de entrada de DruID a utilizar (opcional).
-     - `urlToRedirect`: URL a la que redirigir después del registro (opcional).
+     - `url-to-redirect`: URL a la que redirigir después del registro (opcional).
      - `state`: Estado para mantener después del registro (opcional).
      - `show_login`: Define si se debe mostrar el enlace de inicio de sesión. Valor por defecto: `true`.
      - `show_register`: Define si se debe mostrar el enlace de registro. Valor por defecto: `true`.
@@ -93,7 +93,7 @@ El plugin funciona mediante **Shortcodes**, los cuales permiten inyectar los enl
    **Parámetros:**
      - `entrypoint`: Define el punto de entrada de DruID a utilizar (opcional).
      - `text`: Define el texto del enlace de inicio de sesión. Valor por defecto: `Login`.
-     - `urlToRedirect`: URL completa a la que redirigir después del inicio de sesión (opcional).
+     - `url-to-redirect`: URL completa a la que redirigir después del inicio de sesión (opcional).
      - `state`: Estado para mantener después del inicio de sesión (opcional).
    
    **Clases CSS:**
@@ -111,7 +111,7 @@ El plugin funciona mediante **Shortcodes**, los cuales permiten inyectar los enl
    **Parámetros:**
      - `entrypoint`: Define el punto de entrada de DruID a utilizar (opcional).
      - `text`: Define el texto del enlace de registro. Valor por defecto: `Register`.
-     - `urlToRedirect`: URL completa a la que redirigir después del registro (opcional).
+     - `url-to-redirect`: URL completa a la que redirigir después del registro (opcional).
      - `state`: Estado para mantener después del registro (opcional).
    
    **Clases CSS:**
@@ -129,7 +129,7 @@ El plugin funciona mediante **Shortcodes**, los cuales permiten inyectar los enl
    **Parámetros:**
      - `entrypoint`: Define el punto de entrada de DruID a utilizar (opcional).
      - `text`: Define el texto del enlace para editar la cuenta. Valor por defecto: `Mi Cuenta`.
-     - `urlToRedirect`: URL completa a la que redirigir después de editar la cuenta (opcional).
+     - `url-to-redirect`: URL completa a la que redirigir después de editar la cuenta (opcional).
      - `state`: Estado para mantener después de editar la cuenta (opcional).
    
    **Clases CSS:**
