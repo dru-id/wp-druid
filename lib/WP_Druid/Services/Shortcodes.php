@@ -64,7 +64,7 @@ class Shortcodes
                 $data['is_user_logged'] = true;
                 $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
                     .http_build_query($locale_param, null, '&');
-                $data['logout_url'] = '/druid-actions/logout';
+                $data['logout_url'] = '/druid-actions/logout'.http_build_query(array('state' => $state), null, '&');
 
                 $info = UserApi::getUserLogged();
                 if (!is_null($info)) {
