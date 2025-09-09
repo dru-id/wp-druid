@@ -16,12 +16,14 @@ class Error_Log extends Admin_Controller
 	public function index()
     {
 		global $wpdb;
-		$sql = 'SELECT *
-				FROM ' . $wpdb->druid_error_logs .'
-				WHERE date > %s
-				ORDER BY date DESC';
+        $sql = 'SELECT *
+        FROM ' . $wpdb->druid_error_logs .'
+        WHERE logged_at > %s
+        ORDER BY logged_at DESC';
 
-		$data['data'] = $wpdb->get_results( $wpdb->prepare( $sql, date( 'c', strtotime( '1 month ago' ) ) ) );
+        $data['data'] = $wpdb->get_results(
+            $wpdb->prepare($sql, current_time('mysql', 1))
+        );
 
 		if ( is_null( $data['data'] ) || $data['data'] instanceof WP_Error ) {
 			return null;
