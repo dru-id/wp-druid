@@ -51,7 +51,7 @@ class Errors
                 $wpdb->druid_error_logs,
                 array(
                     'section' => $section,
-                    'date' => date('c'),
+                    'logged_at' => date('c'),
                     'code' => $code,
                     'message' => $message,
                 ),

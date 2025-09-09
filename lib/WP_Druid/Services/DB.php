@@ -27,6 +27,7 @@ class DB
 		global $wpdb;
 
 		$this->initialize_wpdb_tables();
+        $charset_collate = $wpdb->get_charset_collate();
 
 		$sql = array();
 
@@ -50,12 +51,12 @@ class DB
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_error_logs." (
 					id INT(11) AUTO_INCREMENT NOT NULL,
-					date DATETIME  NOT NULL,
+					logged_at DATETIME  NOT NULL,
 					section VARCHAR(255),
 					code VARCHAR(255),
 					message TEXT,
 					PRIMARY KEY  (id)
-				);";
+				)$charset_collate;";
 
         $sql[] = "CREATE TABLE IF NOT EXISTS ".$wpdb->druid_config." (					
 					client_id VARCHAR(100) NOT NULL,
