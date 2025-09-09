@@ -35,10 +35,12 @@ register_activation_hook(WPDR_PLUGIN_FILE, function () {
 });
 
 register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
-    $db = new \WP_Druid\Services\DB();
-    $db-> clean_db();
+    druid_x(new \WP_Druid\Services\DB())->clean_db();
+
     druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
     flush_rewrite_rules();
+
+    delete_option('druid_plugin_version');
 });
 
 add_action('plugins_loaded', function () {
