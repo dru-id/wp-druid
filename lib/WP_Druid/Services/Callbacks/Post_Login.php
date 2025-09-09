@@ -69,6 +69,7 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
         } catch (Login_User_Exception $e) {
             Render_Service::render('public/error-page', array('message' => $e->getMessage())); // This view ends WP.
         } catch (\Exception $e) {
+            error_log(__CLASS__ . ' (' . __LINE__ . '): ' . $e->getMessage());
             Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e->getMessage());
             Render_Service::render('public/error-page', array('message' => __('An unknown error prevented us to identify you on the platform. Please try again.', WPDR_LANG_NS))); // This view ends WP.
         }
