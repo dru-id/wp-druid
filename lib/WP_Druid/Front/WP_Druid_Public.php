@@ -8,18 +8,17 @@ class WP_Druid_Public
 {
     protected $locale;
 
-    public function init() {
+    public function init()
+    {
         $this->enque_media();
 
-        druid_x(new \WP_Druid\Services\Installer())->loaded();
-
-        add_filter( 'the_excerpt', 'shortcode_unautop');
-        add_filter( 'the_excerpt', 'do_shortcode');
-        add_filter( 'get_the_excerpt', 'do_shortcode', 5 );
+        add_filter('the_excerpt', 'shortcode_unautop');
+        add_filter('the_excerpt', 'do_shortcode');
+        add_filter('get_the_excerpt', 'do_shortcode', 5);
 
         IdentityFactory::init(true);
 
-        add_action('init', function() {
+        add_action('init', function () {
             druid_x(new Router())->init();
 
             // TODO: Forces user to logout if is logged in DruID but logged in Wordpress.
@@ -32,7 +31,16 @@ class WP_Druid_Public
             }
         });
 
-        add_action('wp_logout', function(){ druid_x(new Logout_Callback())->run(); }, 10, 0);
+        add_action('after_setup_theme', function () {
+            if (!current_user_can('administrator')) {
+                show_admin_bar(false);
+            }
+            load_child_theme_textdomain(WPDR_LANG_NS, WPDR_PLUGIN_DIR . 'languages');
+        });
+
+        add_action('wp_logout', function () {
+            druid_x(new Logout_Callback())->run();
+        }, 10, 0);
     }
 
     private function enque_media() {
@@ -40,7 +48,6 @@ class WP_Druid_Public
             //TODO: url sso javascript loaded from wp admin properties
             //if (!Identity::isConnected())
             //    wp_enqueue_script('wpdr-login-sso', 'https://login-test.pernod-ricard-espana.com/login/sso');
-
         });
     }
 }

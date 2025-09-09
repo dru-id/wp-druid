@@ -1,16 +1,16 @@
 <?php defined('ABSPATH') or die('Direct access to this file is not allowed.');
 /**
  * Plugin Name: Druid for WordPress
- * Description: Implements the Druid solution into Wordpress
+ * Description: Implements the Druid solution into WordPress
  * Version: 1.0.0
  * Author: Genetsis
  * Author URI: https://druid.com
  */
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 define('WP_DRUID', 'druid'); // Use this key to check if this plugin exists.
-define('WPDR_PLUGIN_PUBLIC_NAME', 'DRUID for Wordpress');
+define('WPDR_PLUGIN_PUBLIC_NAME', 'DRUID for WordPress');
 define('WPDR_PLUGIN_NAME', plugin_basename(__FILE__));
 define('WPDR_PLUGIN_FILE', __FILE__);
 define('WPDR_PLUGIN_DIR', trailingslashit(plugin_dir_path(__FILE__)));
@@ -25,15 +25,35 @@ define('WPDR_CURRENT_LOCALE', '');
 define('WPDR_USER_CANCEL_ACTION_SESSION_KEY', 'user_cancel_action');
 define('WPDR_CUSTOM_RETURN_URL_SESSION_KEY', 'custom_return_url');
 
+register_activation_hook(WPDR_PLUGIN_FILE, function () {
+    druid_x(new \WP_Druid\Services\DB())->install_db();
+
+    druid_x(new \WP_Druid\Front\Router())->add_rewrite_rules();
+    flush_rewrite_rules();
+
+    update_option('druid_plugin_version', WPDR_VERSION);
+});
+
+register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
+    $db = new \WP_Druid\Services\DB();
+    $db-> clean_db();
+    druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
+    flush_rewrite_rules();
+});
+
+add_action('plugins_loaded', function () {
+    $db = new \WP_Druid\Services\DB();
+    $db->initialize_wpdb_tables();
+    $db->check_update();
+}, 1);
+
 /**
  * Plugin main class.
- *
- * @package WP_Druid
  */
 class WP_Druid
 {
-
-	public function init() {
+    public function init()
+    {
         if (session_id() === '') {
             session_start();
         }
@@ -45,14 +65,10 @@ class WP_Druid
         }
 
         $this->setup_shortcodes();
-
-	}
-
+    }
 
     /**
-     * In this method we will set up all shortcodes for this plugin.
-     *
-     * @return void
+     * Register shortcodes.
      */
     private function setup_shortcodes()
     {
