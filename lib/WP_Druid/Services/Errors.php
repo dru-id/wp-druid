@@ -30,7 +30,6 @@ class Errors
      */
     public static function log_error($section, $error)
     {
-
         $dao_config = new ConfigDAO();
 
         if (defined('WP_DEBUG') || in_array($dao_config->getLogLevel(), ['Debug', 'Error'], true)) {
@@ -42,20 +41,22 @@ class Errors
                 $message = $error->getMessage();
             } else {
                 $code = null;
-                $message = $error;
+                $message = (string) $error;
             }
 
             global $wpdb;
-            $wpdb->druid_error_logs = $wpdb->prefix . 'druid_error_logs';
+            $table = $wpdb->druid_error_logs ?: ($wpdb->prefix . 'druid_error_logs');
+            $now = current_time('mysql');
+
             $wpdb->insert(
-                $wpdb->druid_error_logs,
-                array(
-                    'section' => $section,
-                    'logged_at' => date('c'),
-                    'code' => $code,
-                    'message' => $message,
-                ),
-                array('%s', '%s', '%s', '%s')
+                $table,
+                [
+                    'section'   => $section,
+                    'logged_at' => $now,
+                    'code'      => (string) $code,
+                    'message'   => $message,
+                ],
+                ['%s', '%s', '%s', '%s']
             );
         }
     }

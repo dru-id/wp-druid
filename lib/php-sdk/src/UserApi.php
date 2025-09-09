@@ -240,7 +240,7 @@ class UserApi
                         $params['w.' . $key] = $val;
                     }
 
-                    $response = Request::execute(Identity::getOAuthConfig()->getApiUrl('api', 'user'), $params, Request::HTTP_POST);
+                    $response = Request::execute(Identity::getOAuthConfig()->getApiUrl('graph', 'user'), $params, Request::HTTP_POST);
 
                     if (($response['code'] != 200) || (!isset($response['result']->data)) || ($response['result']->count == '0')) {
                         throw new Exception('The data retrieved is empty');
