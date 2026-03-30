@@ -3,6 +3,9 @@
  * Plugin Name: Druid for WordPress
  * Description: Implements the Druid solution into WordPress
  * Version: 1.0.0
+ * Requires at least: 6.0
+ * Tested up to: 6.9.1
+ * Requires PHP: 7.2.24
  * Author: Genetsis
  * Author URI: https://druid.com
  */

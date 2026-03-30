@@ -22,6 +22,7 @@
     "phpunit/phpunit": "9.*"
   },
   "require": {
+    "php": ">=7.2.24",
     "lib-curl": "*",
     "ext-dom": "*"
   },
@@ -40,4 +41,3 @@
     ]
   }
 }
-
