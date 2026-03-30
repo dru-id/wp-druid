@@ -15,18 +15,17 @@ $usernames = trim(implode(' ', $username));
 echo '<div class="druid-auth-controls">';
 if ($data['is_user_logged']) {
     if ($usernames)
-        echo '<div class="druid-auth-username">' . $usernames . '</div>';
+        echo '<div class="druid-auth-username">' . esc_html($usernames) . '</div>';
 
-    echo '<a href="'.$data['edit_account_url'].'" class="druid-auth-control-link druid-edit-account">'.__('Mi Cuenta').'</a>';
-    echo '<a href="'.$data['logout_url'].'" class="druid-auth-control-link druid-logout">'.__('Desconectar').'</a>';
+    echo '<a href="' . esc_url($data['edit_account_url']) . '" class="druid-auth-control-link druid-edit-account">' . esc_html__('Mi Cuenta', WPDR_LANG_NS) . '</a>';
+    echo '<a href="' . esc_url($data['logout_url']) . '" class="druid-auth-control-link druid-logout">' . esc_html__('Desconectar', WPDR_LANG_NS) . '</a>';
 } else {
 
     if ($data['show_login'])
-        echo '<a href="' . $data['login_url'] . '" class="druid-auth-control-link druid-login">' . __("Login") . '</a>';
+        echo '<a href="' . esc_url($data['login_url']) . '" class="druid-auth-control-link druid-login">' . esc_html__('Login', WPDR_LANG_NS) . '</a>';
 
     if ($data['show_register'])
-        echo '<a href="' . $data['register_url'] . '" class="druid-auth-control-link druid-register">' . __('Registro') . '</a>';
+        echo '<a href="' . esc_url($data['register_url']) . '" class="druid-auth-control-link druid-register">' . esc_html__('Registro', WPDR_LANG_NS) . '</a>';
 
 }
 echo '</div>';
-

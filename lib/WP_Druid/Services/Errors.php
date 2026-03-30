@@ -30,9 +30,17 @@ class Errors
      */
     public static function log_error($section, $error)
     {
-        $dao_config = new ConfigDAO();
+        $db = new DB();
+        $db->initialize_wpdb_tables();
 
-        if (defined('WP_DEBUG') || in_array($dao_config->getLogLevel(), ['Debug', 'Error'], true)) {
+        $dao_config = new ConfigDAO();
+        $log_level = strtoupper((string) $dao_config->getLogLevel());
+
+        if ($log_level === '') {
+            $log_level = 'ERROR';
+        }
+
+        if ((defined('WP_DEBUG') && WP_DEBUG) || in_array($log_level, ['DEBUG', 'ERROR'], true)) {
             if ($error instanceof WP_Error) {
                 $code = $error->get_error_code();
                 $message = $error->get_error_message();
@@ -58,6 +66,10 @@ class Errors
                 ],
                 ['%s', '%s', '%s', '%s']
             );
+
+            if ($wpdb->last_error) {
+                error_log('WP_Druid error log insert failed: ' . $wpdb->last_error);
+            }
         }
     }
 }

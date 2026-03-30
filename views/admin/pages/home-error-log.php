@@ -24,12 +24,12 @@
         }
 
         foreach ($data as $item) {
-	?>
+		?>
         <tr>
-            <td><?php echo date('m/d/Y H:i:s', strtotime($item->date)); ?></td>
-            <td><?php echo $item->section; ?></td>
-            <td><?php echo (empty($item->code) ? '-' : $item->code); ?></td>
-            <td><?php echo strip_tags($item->message); ?></td>
+            <td><?php echo !empty($item->logged_at) ? esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $item->logged_at, false)) : '-'; ?></td>
+            <td><?php echo esc_html($item->section); ?></td>
+            <td><?php echo esc_html(empty($item->code) ? '-' : $item->code); ?></td>
+            <td><?php echo esc_html(wp_strip_all_tags($item->message)); ?></td>
         </tr>
     <?php } ?>
         </tbody>

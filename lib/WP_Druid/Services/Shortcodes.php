@@ -64,7 +64,7 @@ class Shortcodes
                 $data['is_user_logged'] = true;
                 $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
                     .http_build_query($locale_param, null, '&');
-                $data['logout_url'] = '/druid-actions/logout'.http_build_query(array('state' => $state), null, '&');
+                $data['logout_url'] = self::build_logout_url($state);
 
                 $info = UserApi::getUserLogged();
                 if (!is_null($info)) {
@@ -265,7 +265,7 @@ class Shortcodes
         try {
             $data['is_user_logged'] = Identity::isConnected();
 
-            $data['logout_url'] = '/druid-actions/logout';
+            $data['logout_url'] = self::build_logout_url();
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
@@ -307,5 +307,16 @@ class Shortcodes
         }
 
         return $encoded_state;
+    }
+
+    private static function build_logout_url($state = null)
+    {
+        $logout_url = home_url('/druid-actions/logout');
+
+        if ($state) {
+            $logout_url = add_query_arg('state', $state, $logout_url);
+        }
+
+        return $logout_url;
     }
 }

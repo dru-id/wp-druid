@@ -4,8 +4,8 @@
     <hr class="wp-header-end">
 
     <h2 class="nav-tab-wrapper">
-        <a class="nav-tab <?php echo ($tab == 'config') ? 'nav-tab-active' : ''?>" href="<?php echo add_query_arg('tab', 'config', $current_admin_page) ?>">Config</a>
-        <a class="nav-tab <?php echo ($tab == 'logs') ? 'nav-tab-active' : ''?>" href="<?php echo add_query_arg('tab', 'logs', $current_admin_page) ?>">Druid Logs</a>
+        <a class="nav-tab <?php echo ($tab == 'config') ? 'nav-tab-active' : ''?>" href="<?php echo esc_url(add_query_arg('tab', 'config', $current_admin_page)); ?>">Config</a>
+        <a class="nav-tab <?php echo ($tab == 'logs') ? 'nav-tab-active' : ''?>" href="<?php echo esc_url(add_query_arg('tab', 'logs', $current_admin_page)); ?>">Druid Logs</a>
     </h2>
 
     <?php settings_errors(); ?>
@@ -18,15 +18,15 @@
 
                 <div class="form-field form-required regular-text">
                     <label for="domain">Domain</label>
-                    <input name="domain" id="domain" type="text" value="<?php echo $actual_config->getDomain(); ?>" size="40" aria-required="true" class="form-required">
+                    <input name="domain" id="domain" type="text" value="<?php echo esc_attr($actual_config->getDomain()); ?>" size="40" aria-required="true" class="form-required">
                 </div>
                 <div class="form-field form-required regular-text">
                     <label for="client_id">Client ID</label>
-                    <input name="client_id" id="client_id" type="text" value="<?php echo $actual_config->getClientId(); ?>" size="40" aria-required="true" class="form-required">
+                    <input name="client_id" id="client_id" type="text" value="<?php echo esc_attr($actual_config->getClientId()); ?>" size="40" aria-required="true" class="form-required">
                 </div>
                 <div class="form-field form-required regular-text">
                     <label for="client_secret">Client Secret</label>
-                    <input name="client_secret" id="client_secret" type="text" value="<?php echo $actual_config->getClientSecret(); ?>" size="40" aria-required="true">
+                    <input name="client_secret" id="client_secret" type="text" value="<?php echo esc_attr($actual_config->getClientSecret()); ?>" size="40" aria-required="true">
                 </div>
                 <div class="form-field form-required regular-text">
                     <label for="environment">Environment</label>
@@ -38,16 +38,16 @@
                 </div>
                 <div class="form-field form-required">
                     <label for="entry_points">Entry Point</label>
-                    <input name="entry_points" id="entry_points" type="text" value="<?php echo $actual_config->getEntryPoint(); ?>" size="40" aria-required="true" class="form-required">
+                    <input name="entry_points" id="entry_points" type="text" value="<?php echo esc_attr($actual_config->getEntryPoint()); ?>" size="40" aria-required="true" class="form-required">
                 </div>
                 <div class="form-field form-required">
                     <label for="log_path">Log Path</label>
-                    <input name="log_path" id="log_path" type="text" value="<?php echo $actual_config->getLogPath(); ?>" size="60" aria-required="true" maxlength="200" class="form-required">
+                    <input name="log_path" id="log_path" type="text" value="<?php echo esc_attr($actual_config->getLogPath()); ?>" size="60" aria-required="true" maxlength="200" class="form-required">
                     <p>Relative Path Folder to the Document Root</p>
                 </div>
                 <div class="form-field form-required">
                     <label for="cache_path">Cache Path</label>
-                    <input name="cache_path" id="cache_path" type="text" value="<?php echo $actual_config->getCachePath(); ?>" size="60" aria-required="true" maxlength="200" class="form-required">
+                    <input name="cache_path" id="cache_path" type="text" value="<?php echo esc_attr($actual_config->getCachePath()); ?>" size="60" aria-required="true" maxlength="200" class="form-required">
                     <p>Relative Path Folder to the Document Root</p>
                 </div>
                 <div class="form-field form-required regular-text">

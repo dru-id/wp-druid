@@ -15,7 +15,7 @@ define('WPDR_PLUGIN_NAME', plugin_basename(__FILE__));
 define('WPDR_PLUGIN_FILE', __FILE__);
 define('WPDR_PLUGIN_DIR', trailingslashit(plugin_dir_path(__FILE__)));
 define('WPDR_PLUGIN_URL', trailingslashit(plugin_dir_url(__FILE__)));
-define('DRUID_DB_VERSION', 1);
+define('DRUID_DB_VERSION', 2);
 define('WPDR_VERSION', '1.0.0');
 define('WPDR_LANG_NS', 'WP_Druid');
 
@@ -35,12 +35,8 @@ register_activation_hook(WPDR_PLUGIN_FILE, function () {
 });
 
 register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
-    druid_x(new \WP_Druid\Services\DB())->clean_db();
-
     druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
     flush_rewrite_rules();
-
-    delete_option('druid_plugin_version');
 });
 
 add_action('plugins_loaded', function () {

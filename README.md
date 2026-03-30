@@ -43,7 +43,7 @@ Debe obtenerse cierta información del Cockpit de DruID identity para configurar
    Ruta relativa al `Document Root` donde se almacenará la caché del plugin.
 
 8. **Log Level**  
-   Nivel de trazas que se imprimirán, tanto en la sección de logs como en las tablas `wp_druid_error_logs` y `wp_druid_log`.
+   Nivel de trazas que se imprimirán tanto en la sección de logs como en la tabla `wp_druid_error_logs`.
 
 ## Logs del Plugin
 

@@ -12,28 +12,10 @@ class ConfigDAO extends DAO
     public function __construct() {
         parent::__construct();
         $this->setFullTableName(ConfigDAO::$table_name);
-        $this->createTableIfNotExists();
-    }
-
-    private function createTableIfNotExists() {
-        $query = "
-            CREATE TABLE IF NOT EXISTS " . $this->getFullTableName() . " (
-                client_id VARCHAR(255) NOT NULL PRIMARY KEY,
-                client_secret VARCHAR(255) NOT NULL,
-                entry_point VARCHAR(255),
-                log_level VARCHAR(50),
-                callback VARCHAR(255),
-                environment VARCHAR(50),
-                log_path VARCHAR(255),
-                cache_path VARCHAR(255),
-                domain VARCHAR(255)
-            )";
-
-        $this->getWpdb()->query($query);
     }
 
     public function get() {
-        $result = $this->getWpdb()->get_row("SELECT * FROM " . $this->getFullTableName());
+        $result = $this->getWpdb()->get_row("SELECT * FROM " . $this->getFullTableName() . " LIMIT 1");
 
         return $this->setConfig($result);
     }
@@ -71,44 +53,48 @@ class ConfigDAO extends DAO
             throw new \Exception("Invalid Data");
         }
 
-        if (empty($this->getByClientID($config->getClientId())->getClientId())) {
+        $existing_config = $this->get();
+
+        $data = array(
+            'client_id' => $config->getClientId(),
+            'client_secret' => $config->getClientSecret(),
+            'entry_point' => $config->getEntryPoint(),
+            'log_level' => $config->getLogLevel(),
+            'callback' => $config->getCallback(),
+            'environment' => $config->getEnvironment(),
+            'log_path' => $config->getLogPath(),
+            'cache_path' => $config->getCachePath(),
+            'domain' => $config->getDomain()
+        );
+        $formats = array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');
+
+        if (empty($existing_config->getClientId())) {
             $query = $this->getWpdb()->insert(
                 $this->getFullTableName(),
-                array(
-                    'client_id' => $config->getClientId(),
-                    'client_secret' => $config->getClientSecret(),
-                    'entry_point' => $config->getEntryPoint(),
-                    'log_level' => $config->getLogLevel(),
-                    'callback' => $config->getCallback(),
-                    'environment' => $config->getEnvironment(),
-                    'log_path' => $config->getLogPath(),
-                    'cache_path' => $config->getCachePath(),
-                    'domain' => $config->getDomain()
-                )
+                $data,
+                $formats
             );
         } else {
             $query = $this->getWpdb()->update(
                 $this->getFullTableName(),
+                $data,
                 array(
-                    'client_id' => $config->getClientId(),
-                    'client_secret' => $config->getClientSecret(),
-                    'entry_point' => $config->getEntryPoint(),
-                    'log_level' => $config->getLogLevel(),
-                    'callback' => $config->getCallback(),
-                    'environment' => $config->getEnvironment(),
-                    'log_path' => $config->getLogPath(),
-                    'cache_path' => $config->getCachePath(),
-                    'domain' => $config->getDomain()
+                    'client_id' => $existing_config->getClientId()
                 ),
-                array(
-                    'client_id' => $config->getClientId()
-                )
+                $formats,
+                array('%s')
             );
         }
 
         if ($query === false) {
             throw new \Exception('Error update Config');
         }
+
+        $cleanup_query = $this->getWpdb()->prepare(
+            "DELETE FROM " . $this->getFullTableName() . " WHERE client_id <> %s",
+            $config->getClientId()
+        );
+        $this->getWpdb()->query($cleanup_query);
 
         return true;
     }

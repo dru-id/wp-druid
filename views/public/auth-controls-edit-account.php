@@ -6,7 +6,6 @@ if (!isset($data['text'])) { $data['text'] = 'My account'; }
 
 echo '<div class="druid-auth-controls-edit-account">';
 if ($data['is_user_logged']) {
-    echo '<a href="'.$data['edit_account_url'].'" class="druid-auth-control-link druid-edit-account">'.__($data['text']).'</a>';
+    echo '<a href="' . esc_url($data['edit_account_url']) . '" class="druid-auth-control-link druid-edit-account">' . esc_html($data['text']) . '</a>';
 }
 echo '</div>';
-
