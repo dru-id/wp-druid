@@ -12,9 +12,9 @@
 
     <?php if ($tab == 'config') { ?>
         <div class="form-wrap">
-            <form action="<?php echo admin_url('admin-post.php'); ?>" id="druid-config" method="post" class="validate">
+            <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="druid-config" method="post" class="validate">
                 <input type="hidden" name="action" value="edit_druid_settings" />
-                <input type="hidden" name="druid_meta_nonce" value="<?php echo wp_create_nonce('druid_edit_config'); ?>" />
+                <?php wp_nonce_field('druid_edit_config', 'druid_meta_nonce'); ?>
 
                 <div class="form-field form-required regular-text">
                     <label for="domain">Domain</label>
@@ -70,11 +70,11 @@
             <table class="form-table">
                 <tr>
                     <th scope="row"><label>Last Request</label></th>
-                    <td><textarea name="last-request" cols="100" rows="20"><?php if (!empty($logs_last)) echo file_get_contents($logs_last); ?></textarea></td>
+                    <td><textarea name="last-request" cols="100" rows="20"><?php if (!empty($logs_last) && is_readable($logs_last)) echo esc_textarea(file_get_contents($logs_last)); ?></textarea></td>
                 </tr>
                 <tr>
                     <th scope="row">All Requests</th>
-                    <td><textarea name="last-request" cols="100" rows="30"><?php if (!empty($logs_all)) echo file_get_contents($logs_all); ?></textarea></td>
+                    <td><textarea name="last-request" cols="100" rows="30"><?php if (!empty($logs_all) && is_readable($logs_all)) echo esc_textarea(file_get_contents($logs_all)); ?></textarea></td>
                 </tr>
             </table>
         </div>
@@ -84,7 +84,6 @@
 <script type="text/javascript">
     jQuery(document).ready(function(a) {
         jQuery("#druid-config").submit(function() {
-            console.log("validate");
             return wpAjax.validateForm("#druid-config")
         })
     });

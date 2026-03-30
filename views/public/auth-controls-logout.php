@@ -2,7 +2,7 @@
 
 if (!isset($data['is_user_logged'])) { $data['is_user_logged'] = false; }
 if (!isset($data['logout_url'])) { $data['logout_url'] = '/druid-actions/logout'; }
-if (!isset($data['text'])) { $data['text'] = 'Logout'; }
+if (!isset($data['text']) || $data['text'] === null) { $data['text'] = __('Logout', WPDR_LANG_NS); }
 
 echo '<div class="druid-auth-controls-logout">';
 if ($data['is_user_logged']) {

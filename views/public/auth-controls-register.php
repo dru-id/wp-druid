@@ -2,7 +2,7 @@
 
 if (!isset($data['is_user_logged'])) { $data['is_user_logged'] = false; }
 if (!isset($data['register_url'])) { $data['register_url'] = '#'; }
-if (!isset($data['text'])) { $data['text'] = 'Register'; }
+if (!isset($data['text']) || $data['text'] === null) { $data['text'] = __('Register', WPDR_LANG_NS); }
 
 echo '<div class="druid-auth-controls-register">';
 if (!$data['is_user_logged']) {

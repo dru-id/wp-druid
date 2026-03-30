@@ -19,7 +19,7 @@ class Query_Vars
         }
 
         if (isset($_REQUEST[$key])) {
-            return $_REQUEST[$key];
+            return wp_unslash($_REQUEST[$key]);
         }
 
         return $default;

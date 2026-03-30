@@ -2,7 +2,7 @@
 
 if (!isset($data['is_user_logged'])) { $data['is_user_logged'] = false; }
 if (!isset($data['edit_account_url'])) { $data['edit_account_url'] = '#'; }
-if (!isset($data['text'])) { $data['text'] = 'My account'; }
+if (!isset($data['text']) || $data['text'] === null) { $data['text'] = __('My account', WPDR_LANG_NS); }
 
 echo '<div class="druid-auth-controls-edit-account">';
 if ($data['is_user_logged']) {

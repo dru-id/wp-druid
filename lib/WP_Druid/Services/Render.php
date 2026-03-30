@@ -18,7 +18,7 @@ class Render
             $page = realpath(WPDR_PLUGIN_DIR . 'views/' . $page . '.php');
             if ($page && is_file($page)) {
                 if (is_array($data) && !empty($data)) {
-                    extract($data);
+                    extract($data, EXTR_SKIP);
                 }
                 include $page;
             }

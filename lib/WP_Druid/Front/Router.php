@@ -33,7 +33,9 @@ class Router
 
         add_action('parse_request', function ($wp) {
                 $action = null;
-                if (isset($_REQUEST['error']) && ($_REQUEST['error'] == Router_Parameters::ACTION_USER_CANCEL)) {
+                $request_error = isset($_REQUEST['error']) ? wp_unslash($_REQUEST['error']) : null;
+
+                if ($request_error == Router_Parameters::ACTION_USER_CANCEL) {
                     $action = Router_Parameters::ACTION_USER_CANCEL;
                 } elseif (isset($wp->query_vars[Router_Parameters::ACTION]) && $wp->query_vars[Router_Parameters::ACTION]) {
                     $action = $wp->query_vars[Router_Parameters::ACTION];
@@ -43,8 +45,8 @@ class Router
 
                     switch ($action) {
                         case Router_Parameters::ACTION_USER_CANCEL: // When users push back buttons.
-                            IdentityFactory::init(true);
-                            if(!Identity::isConnected() && is_user_logged_in()) {
+                            $identity_initialized = IdentityFactory::init(true);
+                            if($identity_initialized && !Identity::isConnected() && is_user_logged_in()) {
                                 druid_x(new Logout())->run();
                             } else {
                                 $state = Query_Vars_Service::find(Post_Login_Parameters::STATE, null);
@@ -69,12 +71,13 @@ class Router
                     }
 
                     // Save current URL to redirect user after Druid action (post-login, logout, ...)
-                    SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url($_SERVER['REQUEST_URI'])));
+                    $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '/';
+                    SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url($request_uri)));
 
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
 
-                    Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e->getMessage());
-                    wp_redirect(home_url());
+                    Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
+                    wp_safe_redirect(home_url());
                     exit();
 
                 }
@@ -108,7 +111,7 @@ class Router
      */
     public static function custom_redirect( $page, $admin_notice, $response ) {
 
-        wp_redirect( esc_url_raw( add_query_arg( array(
+        wp_safe_redirect( esc_url_raw( add_query_arg( array(
                 'druid_admin_add_notice' => $admin_notice,
                 'druid_response' => $response,
             ),
@@ -138,7 +141,7 @@ class Router
                     // Log error and keep the default URL
                     Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'Invalid JSON data in state: ' . $json_data);
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Log error and keep the default URL
                 Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'State decoding error: ' . $e->getMessage());
             }

@@ -12,17 +12,20 @@ class Admin_Controller
 
 	protected $data = array();
 
-	public function __construct()
+    public function __construct()
     {
         global $pagenow;
         $this->data['current_admin_page'] =  add_query_arg( 'page', WP_DRUID, admin_url( $pagenow ) );
 
 
         if (isset($_REQUEST['druid_admin_add_notice'])) {
-            if($_REQUEST['druid_admin_add_notice'] === "success") {
-                Admin_Messages::success(htmlspecialchars( print_r( $_REQUEST['druid_response'], true)));
+            $notice = sanitize_key(wp_unslash($_REQUEST['druid_admin_add_notice']));
+            $response = isset($_REQUEST['druid_response']) ? sanitize_text_field(wp_unslash($_REQUEST['druid_response'])) : '';
+
+            if($notice === "success") {
+                Admin_Messages::success($response);
             } else {
-                Admin_Messages::error(htmlspecialchars( print_r( $_REQUEST['druid_response'], true)));
+                Admin_Messages::error($response);
             }
         }
     }

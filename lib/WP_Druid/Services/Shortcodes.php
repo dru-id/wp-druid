@@ -3,6 +3,7 @@
 use Genetsis\Identity;
 use Genetsis\UserApi;
 use Genetsis\URLBuilder;
+use WP_Druid\Factory\IdentityFactory;
 use WP_Druid\Services\Render as Render_Service;
 use WP_Druid\Services\Errors as Errors_Service;
 
@@ -37,6 +38,10 @@ class Shortcodes
         ob_start();
 
         try{
+            if (!IdentityFactory::init(true)) {
+                return ob_get_clean();
+            }
+
             $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
                 ? $attributes['entrypoint']
                 : null;
@@ -91,7 +96,7 @@ class Shortcodes
             }
 
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
 
@@ -116,6 +121,10 @@ class Shortcodes
         ob_start();
 
         try {
+            if (!IdentityFactory::init(true)) {
+                return ob_get_clean();
+            }
+
             $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
                 ? $attributes['entrypoint']
                 : null;
@@ -143,7 +152,7 @@ class Shortcodes
                 ? do_action('druid_auth_controls_login', $data)
                 : Render_Service::render('public/auth-controls-login', $data);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
 
@@ -168,6 +177,10 @@ class Shortcodes
         ob_start();
 
         try {
+            if (!IdentityFactory::init(true)) {
+                return ob_get_clean();
+            }
+
             $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
                 ? $attributes['entrypoint']
                 : null;
@@ -193,7 +206,7 @@ class Shortcodes
                 ? do_action('druid_auth_controls_register', $data)
                 : Render_Service::render('public/auth-controls-register', $data);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
 
@@ -218,6 +231,10 @@ class Shortcodes
         ob_start();
 
         try {
+            if (!IdentityFactory::init(true)) {
+                return ob_get_clean();
+            }
+
             $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
                 ? $attributes['entrypoint']
                 : null;
@@ -241,7 +258,7 @@ class Shortcodes
                 ? do_action('druid_auth_controls_edit_account', $data)
                 : Render_Service::render('public/auth-controls-edit-account', $data);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
 
@@ -263,6 +280,10 @@ class Shortcodes
         ob_start();
 
         try {
+            if (!IdentityFactory::init(true)) {
+                return ob_get_clean();
+            }
+
             $data['is_user_logged'] = Identity::isConnected();
 
             $data['logout_url'] = self::build_logout_url();
@@ -277,7 +298,7 @@ class Shortcodes
                 ? do_action('druid_auth_controls_logout', $data)
                 : Render_Service::render('public/auth-controls-logout', $data);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
 

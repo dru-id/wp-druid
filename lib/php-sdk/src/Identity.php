@@ -22,10 +22,6 @@ use Genetsis\core\LoginStatusType;
 use Genetsis\core\OAuth;
 use Genetsis\core\OAuthConfig;
 
-if (session_id() === '') {
-    session_start();
-}
-
 /**
  * This is the main class of the DRUID library.
  *
@@ -86,6 +82,7 @@ class Identity
     public static function init(OAuthConfig $druid_config, $sync = true)
     {
         try {
+            self::ensureSessionStarted();
 
             if (!self::$initialized) {
                 self::$druid_config = $druid_config;
@@ -115,6 +112,20 @@ class Identity
 //            self::$logger->error($e->getMessage());
             throw $e;
         }
+    }
+
+    private static function ensureSessionStarted()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE || session_status() === PHP_SESSION_DISABLED) {
+            return;
+        }
+
+        if (headers_sent($file, $line)) {
+            error_log(sprintf('Genetsis\\Identity session_start skipped because headers were already sent in %s:%d', $file, $line));
+            return;
+        }
+
+        @session_start();
     }
 
     /**

@@ -2,5 +2,9 @@
 
 require __DIR__.'/lib/WP_Druid/Services/DB.php';
 
-$db = new \WP_Druid\Services\DB();
-$db->remove_db();
+try {
+    $db = new \WP_Druid\Services\DB();
+    $db->remove_db();
+} catch (\Throwable $e) {
+    error_log('WP_Druid uninstall failed: ' . $e->getMessage());
+}

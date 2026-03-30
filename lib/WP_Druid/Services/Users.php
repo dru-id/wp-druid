@@ -57,7 +57,7 @@ class Users
         } catch (Login_User_Exception $e) {
             Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e->getMessage());
             throw new Login_User_Exception(__('We have had problems identifying on the web. Please try again.', WPDR_LANG_NS), $e->getCode(), $e);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             throw $e;
         }
     }
@@ -147,7 +147,7 @@ class Users
                 'druid_id' => $druid_id,
                 'wp_id' => $wp_id,
                 'druid_obj' => json_encode($druid_user_data),
-                'last_update' => date('c'),
+                'last_update' => current_time('mysql'),
             ),
             array('%s', '%d', '%s', '%s')
         );
@@ -235,7 +235,7 @@ class Users
     {
         global $wpdb;
 
-        $result = $wpdb->get_row($wpdb->prepare('SELECT u.* FROM ' . $wpdb->users . ' u INNER JOIN ' . $wpdb->druid_user . ' du ON du.wp_id = u.id where du.druid_id = "%s" LIMIT 1', $druid_id));
+        $result = $wpdb->get_row($wpdb->prepare('SELECT u.* FROM ' . $wpdb->users . ' u INNER JOIN ' . $wpdb->druid_user . ' du ON du.wp_id = u.ID WHERE du.druid_id = %s LIMIT 1', $druid_id));
         if (is_null($result)) {
             return null;
         } elseif ($result instanceof \WP_Error) {

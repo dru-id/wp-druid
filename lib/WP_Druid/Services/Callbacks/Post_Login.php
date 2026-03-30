@@ -1,7 +1,5 @@
 <?php namespace WP_Druid\Services\Callbacks;
 
-use Genetsis\core\OAuthConfig;
-use Genetsis\URLBuilder;
 use WP_Druid\Contracts\Callbacks\Callbackable as CallbackContract;
 use Genetsis\UserApi;
 use Genetsis\Identity;
@@ -25,7 +23,7 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
     {
         $pageToRedirect = home_url();
         try {
-            IdentityFactory::init((is_admin() ? false : true));
+            IdentityFactory::require_initialized((is_admin() ? false : true));
 
             // Checks if the service has an error after login.
             $error = Query_Vars_Service::find(Post_Login_Parameters::ERROR, null);
@@ -62,7 +60,7 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
         } catch (Create_User_Exception|Login_User_Exception $e) {
             Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e->getMessage());
             Render_Service::render('public/error-page', array('message' => $e->getMessage())); // This view ends WP.
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
             Render_Service::render('public/error-page', array('message' => __('An unknown error prevented us to identify you on the platform. Please try again.', WPDR_LANG_NS))); // This view ends WP.
         }
@@ -93,7 +91,7 @@ class Post_Login extends Callback_Base_Service implements CallbackContract
                     // Log error and keep the default URL
                     Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'Invalid JSON data in state: ' . $json_data);
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Log error and keep the default URL
                 Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'State decoding error: ' . $e->getMessage());
             }

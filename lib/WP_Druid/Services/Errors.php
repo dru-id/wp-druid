@@ -11,11 +11,11 @@ class Errors
     /**
      * Logs and rethrow the exception.
      *
-     * @param \Exception $e
+     * @param \Throwable $e
      * @param string $section
-     * @throws \Exception
+     * @throws \Throwable
      */
-    public static function throw_exception(\Exception $e, $section = null)
+    public static function throw_exception(\Throwable $e, $section = null)
     {
         self::log_error($section, $e);
         throw $e;
@@ -25,7 +25,7 @@ class Errors
      * Stores the error into database.
      *
      * @param string $section
-     * @param \WP_Error|\Exception|string $error
+     * @param \WP_Error|\Throwable|string $error
      * @return void
      */
     public static function log_error($section, $error)
@@ -44,7 +44,7 @@ class Errors
             if ($error instanceof WP_Error) {
                 $code = $error->get_error_code();
                 $message = $error->get_error_message();
-            } elseif ($error instanceof \Exception) {
+            } elseif ($error instanceof \Throwable) {
                 $code = $error->getCode();
                 $message = $error->getMessage();
             } else {

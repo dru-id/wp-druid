@@ -26,23 +26,37 @@ define('WPDR_USER_CANCEL_ACTION_SESSION_KEY', 'user_cancel_action');
 define('WPDR_CUSTOM_RETURN_URL_SESSION_KEY', 'custom_return_url');
 
 register_activation_hook(WPDR_PLUGIN_FILE, function () {
-    druid_x(new \WP_Druid\Services\DB())->install_db();
+    try {
+        druid_x(new \WP_Druid\Services\DB())->install_db();
 
-    druid_x(new \WP_Druid\Front\Router())->add_rewrite_rules();
-    flush_rewrite_rules();
+        druid_x(new \WP_Druid\Front\Router())->add_rewrite_rules();
+        flush_rewrite_rules();
 
-    update_option('druid_plugin_version', WPDR_VERSION);
+        update_option('druid_plugin_version', WPDR_VERSION);
+    } catch (\Throwable $e) {
+        error_log('WP_Druid activation failed: ' . $e->getMessage());
+        deactivate_plugins(WPDR_PLUGIN_NAME);
+        wp_die(esc_html__('DruID could not be activated. Check the PHP error log for details.', WPDR_LANG_NS), esc_html__('Error', WPDR_LANG_NS), array('response' => 500));
+    }
 });
 
 register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
-    druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
-    flush_rewrite_rules();
+    try {
+        druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
+        flush_rewrite_rules();
+    } catch (\Throwable $e) {
+        error_log('WP_Druid deactivation failed: ' . $e->getMessage());
+    }
 });
 
 add_action('plugins_loaded', function () {
-    $db = new \WP_Druid\Services\DB();
-    $db->initialize_wpdb_tables();
-    $db->check_update();
+    try {
+        $db = new \WP_Druid\Services\DB();
+        $db->initialize_wpdb_tables();
+        $db->check_update();
+    } catch (\Throwable $e) {
+        error_log('WP_Druid database bootstrap failed: ' . $e->getMessage());
+    }
 }, 1);
 
 /**
@@ -52,17 +66,26 @@ class WP_Druid
 {
     public function init()
     {
-        if (session_id() === '') {
-            session_start();
-        }
+        add_action('init', array($this, 'load_textdomain'));
 
-        if (is_admin()) {
-            druid_x(new \WP_Druid\Admin\WP_Druid_Admin())->init();
-        } else {
-            druid_x(new \WP_Druid\Front\WP_Druid_Public())->init();
+        \WP_Druid\Utils\Session\Services\SessionManager::ensure_started();
+
+        try {
+            if (is_admin()) {
+                druid_x(new \WP_Druid\Admin\WP_Druid_Admin())->init();
+            } else {
+                druid_x(new \WP_Druid\Front\WP_Druid_Public())->init();
+            }
+        } catch (\Throwable $e) {
+            \WP_Druid\Services\Errors::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
         }
 
         $this->setup_shortcodes();
+    }
+
+    public function load_textdomain()
+    {
+        load_plugin_textdomain(WPDR_LANG_NS, false, dirname(WPDR_PLUGIN_NAME) . '/languages');
     }
 
     /**

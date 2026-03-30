@@ -16,17 +16,24 @@ class Logout extends Callback_Base_Service implements CallbackContract
 {
     public function run()
     {
-        IdentityFactory::init(true);
+        $pageToRedirect = home_url();
 
-        // Druid logout.
-        if (Identity::isConnected())
-            Identity::logoutUser();
+        try {
+            IdentityFactory::require_initialized(true);
 
-        $state = Query_Vars_Service::find(Post_Login_Parameters::STATE, null);
-        $pageToRedirect = $this->processState($state);
+            // Druid logout.
+            if (Identity::isConnected()) {
+                Identity::logoutUser();
+            }
 
-        // WP logout.
-        Users_Service::logout();
+            $state = Query_Vars_Service::find(Post_Login_Parameters::STATE, null);
+            $pageToRedirect = $this->processState($state);
+
+            // WP logout.
+            Users_Service::logout();
+        } catch (\Throwable $e) {
+            Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
+        }
 
         wp_safe_redirect($pageToRedirect);
         exit();
@@ -54,7 +61,7 @@ class Logout extends Callback_Base_Service implements CallbackContract
                     // Log error and keep the default URL
                     Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'Invalid JSON data in state: ' . $json_data);
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Log error and keep the default URL
                 Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'State decoding error: ' . $e->getMessage());
             }

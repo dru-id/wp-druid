@@ -6,13 +6,36 @@
 class SessionManager
 {
     /**
+     * Starts the PHP session when possible.
+     *
+     * @return bool
+     */
+    public static function ensure_started()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return true;
+        }
+
+        if (session_status() === PHP_SESSION_DISABLED) {
+            return false;
+        }
+
+        if (headers_sent($file, $line)) {
+            error_log(sprintf('WP_Druid session_start skipped because headers were already sent in %s:%d', $file, $line));
+            return false;
+        }
+
+        return @session_start();
+    }
+
+    /**
      * @param string $key
      * @param mixed $value
      * @return void
      */
     public static function set($key, $value)
     {
-        if ($key && isset($_SESSION)) {
+        if ($key && self::ensure_started() && isset($_SESSION)) {
             $_SESSION[$key] = $value;
         }
     }
@@ -24,6 +47,10 @@ class SessionManager
      */
     public static function get($key, $default = null)
     {
+        if (!self::ensure_started()) {
+            return $default;
+        }
+
         return ($key && isset($_SESSION) && array_key_exists($key, $_SESSION) && $_SESSION[$key])
             ? $_SESSION[$key]
             : $default;
@@ -47,6 +74,10 @@ class SessionManager
      */
     public static function has($key)
     {
+        if (!self::ensure_started()) {
+            return false;
+        }
+
         return ($key && isset($_SESSION) && array_key_exists($key, $_SESSION));
     }
 
@@ -56,7 +87,7 @@ class SessionManager
      */
     public static function remove($key)
     {
-        if ($key && isset($_SESSION) && array_key_exists($key, $_SESSION)) {
+        if ($key && self::ensure_started() && isset($_SESSION) && array_key_exists($key, $_SESSION)) {
             unset($_SESSION[$key]);
         }
     }

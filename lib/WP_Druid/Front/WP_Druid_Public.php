@@ -2,6 +2,7 @@
 
 use Genetsis\Identity;
 use WP_Druid\Factory\IdentityFactory;
+use WP_Druid\Services\Errors as Errors_Service;
 use WP_Druid\Services\Callbacks\Logout as Logout_Callback;
 
 class WP_Druid_Public
@@ -16,18 +17,25 @@ class WP_Druid_Public
         add_filter('the_excerpt', 'do_shortcode');
         add_filter('get_the_excerpt', 'do_shortcode', 5);
 
-        IdentityFactory::init(true);
+        try {
+            IdentityFactory::init(true);
+        } catch (\Throwable $e) {
+            Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
+        }
 
         add_action('init', function () {
-            druid_x(new Router())->init();
+            try {
+                druid_x(new Router())->init();
 
-            // TODO: Forces user to logout if is logged in DruID but logged in Wordpress.
-            if (!is_user_logged_in() && Identity::isConnected()) {
-                Identity::logoutUser();
+                if (!is_user_logged_in() && Identity::isConnected()) {
+                    Identity::logoutUser();
 
-                Identity::isConnected()
-                    ? do_action(WPDR_ACTION_USER_IS_LOGGED)
-                    : do_action(WPDR_ACTION_USER_IS_NOT_LOGGED);
+                    Identity::isConnected()
+                        ? do_action(WPDR_ACTION_USER_IS_LOGGED)
+                        : do_action(WPDR_ACTION_USER_IS_NOT_LOGGED);
+                }
+            } catch (\Throwable $e) {
+                Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', $e);
             }
         });
 
@@ -35,7 +43,6 @@ class WP_Druid_Public
             if (!current_user_can('administrator')) {
                 show_admin_bar(false);
             }
-            load_child_theme_textdomain(WPDR_LANG_NS, WPDR_PLUGIN_DIR . 'languages');
         });
 
         add_action('wp_logout', function () {
