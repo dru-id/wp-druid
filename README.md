@@ -100,6 +100,8 @@ Parámetros:
 - `show_register`: `true` o `false`. Por defecto `true`.
 - `get_only_url`: devuelve solo la URL de `login` o `register`.
 
+Si no se informa `url-to-redirect`, el shortcode utiliza por defecto la URL actual de la pagina donde se renderiza. Si por algun motivo esa informacion no llega al callback, el plugin intenta volver a la ultima URL valida del frontend guardada en sesion y, si no existe, a `home_url()`.
+
 Clases CSS:
 
 - `druid-auth-controls`
@@ -128,6 +130,8 @@ Parámetros:
 - `url-to-redirect`: URL a la que volver tras el login.
 - `state`: estado adicional a preservar.
 
+Si no se informa `url-to-redirect`, el shortcode utiliza por defecto la URL actual de la pagina donde se renderiza. Si por algun motivo esa informacion no llega al callback, el plugin intenta volver a la ultima URL valida del frontend guardada en sesion y, si no existe, a `home_url()`.
+
 Clases CSS:
 
 - `druid-auth-controls-login`
@@ -150,6 +154,8 @@ Parámetros:
 - `text`: texto del enlace. Por defecto `Register`.
 - `url-to-redirect`: URL a la que volver tras el registro.
 - `state`: estado adicional a preservar.
+
+Si no se informa `url-to-redirect`, el shortcode utiliza por defecto la URL actual de la pagina donde se renderiza. Si por algun motivo esa informacion no llega al callback, el plugin intenta volver a la ultima URL valida del frontend guardada en sesion y, si no existe, a `home_url()`.
 
 Clases CSS:
 
@@ -174,6 +180,8 @@ Parámetros:
 - `url-to-redirect`: URL a la que volver tras editar la cuenta.
 - `state`: estado adicional a preservar.
 
+Si no se informa `url-to-redirect`, el shortcode utiliza por defecto la URL actual de la pagina donde se renderiza. Si por algun motivo esa informacion no llega al callback, el plugin intenta volver a la ultima URL valida del frontend guardada en sesion y, si no existe, a `home_url()`.
+
 Clases CSS:
 
 - `druid-auth-controls-edit-account`
@@ -193,6 +201,10 @@ Renderiza un enlace de logout del plugin.
 Parámetros:
 
 - `text`: texto del enlace. Por defecto `Logout`.
+- `url-to-redirect`: URL a la que volver tras el logout.
+- `state`: estado adicional a preservar.
+
+Si no se informa `url-to-redirect`, el shortcode utiliza por defecto la URL actual de la pagina donde se renderiza. Si por algun motivo esa informacion no llega al callback, el plugin intenta volver a la ultima URL valida del frontend guardada en sesion y, si no existe, a `home_url()`.
 
 Clases CSS:
 

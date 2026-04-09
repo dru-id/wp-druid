@@ -70,10 +70,6 @@ class Router
                             break;
                     }
 
-                    // Save current URL to redirect user after Druid action (post-login, logout, ...)
-                    $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '/';
-                    SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url($request_uri)));
-
                 } catch (\Throwable $e) {
 
                     Errors_Service::log_error(__CLASS__.' ('.__LINE__.')', $e);
@@ -81,6 +77,10 @@ class Router
                     exit();
 
                 }
+            });
+
+        add_action('template_redirect', function () {
+                $this->store_previous_frontend_url();
             });
 
     }
@@ -117,6 +117,35 @@ class Router
             ),
             admin_url('admin.php?page='. $page)
         )));
+    }
+
+    private function store_previous_frontend_url()
+    {
+        if ($this->should_skip_previous_frontend_url()) {
+            return;
+        }
+
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '/';
+        SessionManager::set(WPDR_PREVIOUS_URL_SESSION_KEY, esc_url_raw(home_url($request_uri)));
+    }
+
+    private function should_skip_previous_frontend_url()
+    {
+        $request_method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper(wp_unslash($_SERVER['REQUEST_METHOD'])) : 'GET';
+
+        if (is_admin() || wp_doing_ajax()) {
+            return true;
+        }
+
+        if (defined('REST_REQUEST') && REST_REQUEST) {
+            return true;
+        }
+
+        if ($request_method !== 'GET' && $request_method !== 'HEAD') {
+            return true;
+        }
+
+        return is_404() || is_feed() || is_preview() || is_trackback();
     }
 
     private function processState($state)

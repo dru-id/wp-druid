@@ -31,6 +31,12 @@ class Shortcodes
      *
      * @param array $attributes If defined accepts:
      *      - entrypoint: Entry point identifier.
+     *      - social: Social provider to use on login, if any.
+     *      - url-to-redirect: URL to redirect after callback
+     *      - state: state to keep after callback
+     *      - show_login: show login link with text. Default true
+     *      - show_register: show register link with text. Default true
+     *      - get_only_url: only return login or register url
      * @return string
      */
     public static function get_druid_auth_controls ($attributes = array())
@@ -112,7 +118,7 @@ class Shortcodes
      * @param array $attributes If defined accepts:
      *      - entrypoint: Entrypoint identifier.
      *      - text: link text
-     *      - urlToRedirect: URL to redirect after callback
+     *      - url-to-redirect: URL to redirect after callback
      *      - state: state to keep after callback
      * @return string
      */
@@ -168,7 +174,7 @@ class Shortcodes
      * @param array $attributes If defined accepts:
      *      - entrypoint: Entrypoint identifier.
      *      - text: link text
-     *      - urlToRedirect: URL to redirect after callback
+     *      - url-to-redirect: URL to redirect after callback
      *      - state: state to keep after callback
      * @return string
      */
@@ -222,7 +228,7 @@ class Shortcodes
      * @param array $attributes If defined accepts:
      *      - entrypoint: Entrypoint identifier.
      *      - text: link text
-     *      - urlToRedirect: URL to redirect after callback
+     *      - url-to-redirect: URL to redirect after callback
      *      - state: state to keep after callback
      * @return string
      */
@@ -273,6 +279,8 @@ class Shortcodes
      * User's hooks can be attached to {@link Shortcodes::DRUID_AUTH_CONTROLS_LOGOUT} to render custom auth controls.
      * @param array $attributes If defined accepts:
      *      - text: link text
+     *      - url-to-redirect: URL to redirect after callback
+     *      - state: state to keep after callback
      * @return string
      */
     public static function get_druid_auth_controls_logout($attributes = array())
@@ -284,9 +292,11 @@ class Shortcodes
                 return ob_get_clean();
             }
 
+            $state = self::create_encoded_state($attributes);
+
             $data['is_user_logged'] = Identity::isConnected();
 
-            $data['logout_url'] = self::build_logout_url();
+            $data['logout_url'] = self::build_logout_url($state);
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
@@ -314,7 +324,16 @@ class Shortcodes
             : null;
         $urlToRedirect = (isset($attributes['url-to-redirect']) && $attributes['url-to-redirect'])
             ? $attributes['url-to-redirect']
-            : null;
+            : ((isset($attributes['urltoredirect']) && $attributes['urltoredirect'])
+                ? $attributes['urltoredirect']
+                : null);
+
+        if (!$urlToRedirect) {
+            $request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : null;
+            if ($request_uri && !is_admin()) {
+                $urlToRedirect = esc_url_raw(home_url($request_uri));
+            }
+        }
 
         $encoded_state = null;
 
