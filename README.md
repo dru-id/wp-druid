@@ -86,6 +86,66 @@ Esta pantalla muestra:
 
 El plugin expone shortcodes para mostrar enlaces o bloques de autenticación.
 
+## Integraciones
+
+El plugin expone algunas APIs y hooks públicos que pueden reutilizarse desde temas o plugins complementarios para integraciones de frontend y flujos de autenticación.
+
+### URLs de autenticación
+
+Se pueden obtener URLs públicas sin renderizar shortcodes:
+
+- `\WP_Druid\Services\Shortcodes::get_login_url($attributes = array())`
+- `\WP_Druid\Services\Shortcodes::get_register_url($attributes = array())`
+- `\WP_Druid\Services\Shortcodes::get_edit_account_url($attributes = array())`
+- `\WP_Druid\Services\Shortcodes::get_logout_url($attributes = array())`
+
+Los atributos soportados siguen la misma semántica general que los shortcodes, por ejemplo `entrypoint`, `social`, `url-to-redirect` o `state`, según aplique.
+
+Ejemplo:
+
+```php
+$login_url = \WP_Druid\Services\Shortcodes::get_login_url(array(
+    'entrypoint' => 'XXXXXXXXXXXXX-default',
+    'url-to-redirect' => home_url('/mi-cuenta/'),
+));
+```
+
+### Estado de vinculación del usuario
+
+Para comprobar si el usuario actual está vinculado con DruID y obtener su identificador público:
+
+- `\WP_Druid\Services\Users::has_druid_link($wp_user_id = null)`
+- `\WP_Druid\Services\Users::get_druid_id_by_wp_user_id($wp_user_id)`
+- `\WP_Druid\Services\Users::get_current_user_druid_id()`
+
+Ejemplo:
+
+```php
+if (is_user_logged_in() && \WP_Druid\Services\Users::has_druid_link()) {
+    $druid_id = \WP_Druid\Services\Users::get_current_user_druid_id();
+}
+```
+
+### Hooks públicos
+
+El plugin expone hooks para reaccionar a eventos del ciclo de autenticación:
+
+- `WPDR_ACTION_POST_LOGIN` / `druid_post_login`
+- `WPDR_ACTION_POST_REGISTER` / `druid_post_register`
+- `WPDR_ACTION_POST_EDIT_ACCOUNT` / `druid_post_edit_account`
+
+Ejemplo:
+
+```php
+add_action('druid_post_login', function ($context) {
+    if (!is_array($context) || empty($context['wp_user_id'])) {
+        return;
+    }
+
+    // Integracion personalizada tras un login valido en WordPress.
+}, 10, 1);
+```
+
 ### `[druid_auth_controls]`
 
 Renderiza un bloque combinado de login/registro o de cuenta/logout según el estado del usuario en DruID.

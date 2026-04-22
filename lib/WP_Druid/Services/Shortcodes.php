@@ -48,21 +48,11 @@ class Shortcodes
                 return ob_get_clean();
             }
 
-            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
-                ? $attributes['entrypoint']
-                : null;
-
-            $state = self::create_encoded_state($attributes);
-
-            $social= (isset($attributes['social']) && $attributes['social']) ? $attributes['social'] : null;
-
-            $locale_param = array('request_locale' => get_locale());
+            $state = static::create_encoded_state($attributes);
 
             $data = array(
-                'login_url' => URLBuilder::getUrlLogin($scope, $social, null, array(), $state)
-                    .'&'.http_build_query($locale_param, '', '&'),
-                'register_url' => URLBuilder::getUrlRegister($scope, null, array(), $state)
-                    .'&'.http_build_query($locale_param, '', '&')
+                'login_url' => static::get_login_url($attributes, $state),
+                'register_url' => static::get_register_url($attributes, $state),
             );
 
             $data['show_login'] = (!empty($attributes['show_login'])) ? filter_var($attributes['show_login'],
@@ -73,9 +63,8 @@ class Shortcodes
 
             if (Identity::isConnected()) {
                 $data['is_user_logged'] = true;
-                $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
-                    .http_build_query($locale_param, null, '&');
-                $data['logout_url'] = self::build_logout_url($state);
+                $data['edit_account_url'] = static::get_edit_account_url($attributes, $state);
+                $data['logout_url'] = static::get_logout_url($attributes, $state);
 
                 $info = UserApi::getUserLogged();
                 if (!is_null($info)) {
@@ -131,19 +120,10 @@ class Shortcodes
                 return ob_get_clean();
             }
 
-            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
-                ? $attributes['entrypoint']
-                : null;
-
-            $state = self::create_encoded_state($attributes);
-
-            $social = (isset($attributes['social']) && $attributes['social']) ? $attributes['social'] : null;
-
-            $locale_param = array('request_locale' => get_locale());
+            $state = static::create_encoded_state($attributes);
 
             $data = array(
-                'login_url' => URLBuilder::getUrlLogin($scope, $social, null, array(), $state)
-                    . '&' . http_build_query($locale_param, '', '&')
+                'login_url' => static::get_login_url($attributes, $state)
             );
 
             $data['is_user_logged'] = Identity::isConnected();
@@ -187,17 +167,10 @@ class Shortcodes
                 return ob_get_clean();
             }
 
-            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
-                ? $attributes['entrypoint']
-                : null;
-
-            $state = self::create_encoded_state($attributes);
-
-            $locale_param = array('request_locale' => get_locale());
+            $state = static::create_encoded_state($attributes);
 
             $data = array(
-                'register_url' => URLBuilder::getUrlRegister($scope, null, array(), $state)
-                    .'&'.http_build_query($locale_param, '', '&')
+                'register_url' => static::get_register_url($attributes, $state)
             );
 
             $data['is_user_logged'] = Identity::isConnected();
@@ -241,18 +214,11 @@ class Shortcodes
                 return ob_get_clean();
             }
 
-            $scope = (isset($attributes['entrypoint']) && $attributes['entrypoint'])
-                ? $attributes['entrypoint']
-                : null;
-
-            $state = self::create_encoded_state($attributes);
-
-            $locale_param = array('request_locale' => get_locale());
+            $state = static::create_encoded_state($attributes);
 
             $data['is_user_logged'] = Identity::isConnected();
 
-            $data['edit_account_url'] = URLBuilder::getUrlEditAccount($scope, null, $state).'&'
-                .http_build_query($locale_param, null, '&');
+            $data['edit_account_url'] = static::get_edit_account_url($attributes, $state);
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
@@ -292,11 +258,11 @@ class Shortcodes
                 return ob_get_clean();
             }
 
-            $state = self::create_encoded_state($attributes);
+            $state = static::create_encoded_state($attributes);
 
             $data['is_user_logged'] = Identity::isConnected();
 
-            $data['logout_url'] = self::build_logout_url($state);
+            $data['logout_url'] = static::get_logout_url($attributes, $state);
 
             $data['text'] = (isset($attributes['text']) && $attributes['text'])
                 ? $attributes['text']
@@ -317,7 +283,95 @@ class Shortcodes
         return ob_get_clean();
     }
 
-    private static function create_encoded_state($attributes)
+    /**
+     * Builds the public DruID login URL without rendering a shortcode.
+     *
+     * @param array $attributes
+     * @param string|null $state
+     * @return string|null
+     */
+    public static function get_login_url($attributes = array(), $state = null)
+    {
+        if (!IdentityFactory::init(true)) {
+            return null;
+        }
+
+        if (is_null($state)) {
+            $state = static::create_encoded_state($attributes);
+        }
+
+        return static::append_locale_param(
+            URLBuilder::getUrlLogin(static::get_scope($attributes), static::get_social($attributes), null, array(), $state)
+        );
+    }
+
+    /**
+     * Builds the public DruID register URL without rendering a shortcode.
+     *
+     * @param array $attributes
+     * @param string|null $state
+     * @return string|null
+     */
+    public static function get_register_url($attributes = array(), $state = null)
+    {
+        if (!IdentityFactory::init(true)) {
+            return null;
+        }
+
+        if (is_null($state)) {
+            $state = static::create_encoded_state($attributes);
+        }
+
+        return static::append_locale_param(
+            URLBuilder::getUrlRegister(static::get_scope($attributes), null, array(), $state)
+        );
+    }
+
+    /**
+     * Builds the public DruID edit account URL without rendering a shortcode.
+     *
+     * @param array $attributes
+     * @param string|null $state
+     * @return string|null
+     */
+    public static function get_edit_account_url($attributes = array(), $state = null)
+    {
+        if (!IdentityFactory::init(true)) {
+            return null;
+        }
+
+        if (is_null($state)) {
+            $state = static::create_encoded_state($attributes);
+        }
+
+        return static::append_locale_param(
+            URLBuilder::getUrlEditAccount(static::get_scope($attributes), null, $state)
+        );
+    }
+
+    /**
+     * Builds the public plugin logout URL without rendering a shortcode.
+     *
+     * @param array $attributes
+     * @param string|null $state
+     * @return string
+     */
+    public static function get_logout_url($attributes = array(), $state = null)
+    {
+        if (is_null($state)) {
+            $state = static::create_encoded_state($attributes);
+        }
+
+        return static::build_logout_url($state);
+    }
+
+    /**
+     * Encodes the state payload shared by login, register, edit account and logout URLs.
+     *
+     * @param array $attributes
+     * @return string|null
+     */
+    public static function create_encoded_state($attributes)
     {
         $state_attr = (isset($attributes['state']) && $attributes['state'])
             ? $attributes['state']
@@ -347,6 +401,58 @@ class Shortcodes
         }
 
         return $encoded_state;
+    }
+
+    /**
+     * Resolves the page to redirect to from an encoded state payload.
+     *
+     * @param string|null $state
+     * @param string|null $default_page_to_redirect
+     * @return string
+     */
+    public static function get_page_to_redirect($state, $default_page_to_redirect = null)
+    {
+        $pageToRedirect = $default_page_to_redirect ?: home_url();
+
+        if ($state) {
+            try {
+                $json_data = base64_decode($state);
+                $data = json_decode($json_data, true);
+
+                if (is_array($data)) {
+                    $pageToRedirect = $data['pageToRedirect'] ?? $pageToRedirect;
+                    if (isset($data['state'])) {
+                        $state_attr_base64 = base64_encode(json_encode(array('state' => $data['state'])));
+                        $pageToRedirect = add_query_arg('state', $state_attr_base64, $pageToRedirect);
+                    }
+                } else {
+                    Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'Invalid JSON data in state: ' . $json_data);
+                }
+            } catch (\Throwable $e) {
+                Errors_Service::log_error(__CLASS__ . ' (' . __LINE__ . ')', 'State decoding error: ' . $e->getMessage());
+            }
+        }
+
+        return $pageToRedirect;
+    }
+
+    private static function get_scope($attributes)
+    {
+        return (isset($attributes['entrypoint']) && $attributes['entrypoint'])
+            ? $attributes['entrypoint']
+            : null;
+    }
+
+    private static function get_social($attributes)
+    {
+        return (isset($attributes['social']) && $attributes['social'])
+            ? $attributes['social']
+            : null;
+    }
+
+    private static function append_locale_param($url)
+    {
+        return $url . '&' . http_build_query(array('request_locale' => get_locale()), '', '&');
     }
 
     private static function build_logout_url($state = null)

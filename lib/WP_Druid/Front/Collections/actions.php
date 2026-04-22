@@ -30,6 +30,13 @@ if (!defined('WPDR_ACTION__CONSTANTS__')) {
 
     /**
      * Functions hooked to this action will be triggered if the user is successfully logged in DruId.
+     *
+     * An array is passed as first parameter with the following options:
+     *      - wp_user_id (integer) Id of the linked WordPress user.
+     *      - wp_user (WP_User) WordPress user object.
+     *      - druid_id (string) Immutable DruID user identifier.
+     *      - druid_user (object) Object with DruID user data.
+     *      - is_new_user (boolean) TRUE when the WordPress user has been created during this login flow.
      */
     define('WPDR_ACTION_POST_LOGIN', 'druid_post_login');
 
