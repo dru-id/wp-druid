@@ -1,4 +1,7 @@
-<?php defined('ABSPATH') or die('Direct access to this file is not allowed.');
+<?php use WP_Druid\Front\Router;
+use WP_Druid\Services\DB;
+
+defined('ABSPATH') or die('Direct access to this file is not allowed.');
 /**
  * Plugin Name: Druid for WordPress
  * Description: Implements the Druid solution into WordPress
@@ -30,9 +33,9 @@ define('WPDR_CUSTOM_RETURN_URL_SESSION_KEY', 'custom_return_url');
 
 register_activation_hook(WPDR_PLUGIN_FILE, function () {
     try {
-        druid_x(new \WP_Druid\Services\DB())->install_db();
+        druid_x(new DB())->install_db();
 
-        druid_x(new \WP_Druid\Front\Router())->add_rewrite_rules();
+        druid_x(new Router())->add_rewrite_rules();
         flush_rewrite_rules();
 
         update_option('druid_plugin_version', WPDR_VERSION);
@@ -45,7 +48,7 @@ register_activation_hook(WPDR_PLUGIN_FILE, function () {
 
 register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
     try {
-        druid_x(new \WP_Druid\Front\Router())->remove_rewrite_rules();
+        druid_x(new Router())->remove_rewrite_rules();
         flush_rewrite_rules();
     } catch (\Throwable $e) {
         error_log('WP_Druid deactivation failed: ' . $e->getMessage());
@@ -54,7 +57,7 @@ register_deactivation_hook(WPDR_PLUGIN_FILE, function () {
 
 add_action('plugins_loaded', function () {
     try {
-        $db = new \WP_Druid\Services\DB();
+        $db = new DB();
         $db->initialize_wpdb_tables();
         $db->check_update();
     } catch (\Throwable $e) {
@@ -70,6 +73,9 @@ class WP_Druid
     public function init()
     {
         add_action('init', array($this, 'load_textdomain'));
+        add_action('init', function () {
+            druid_x(new Router())->add_rewrite_rules();
+        });
 
         \WP_Druid\Utils\Session\Services\SessionManager::ensure_started();
 
