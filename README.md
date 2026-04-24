@@ -126,6 +126,56 @@ if (is_user_logged_in() && \WP_Druid\Services\Users::has_druid_link()) {
 }
 ```
 
+### Usuario logado en DruID
+
+Si necesita consultar el usuario actual directamente desde la sesion DruID activa, el plugin expone una API publica basada en el SDK integrado:
+
+- `\WP_Druid\Services\Users::get_current_user_druid_user_data()`
+- `\WP_Druid\Services\Users::get_current_user_druid_profile()`
+- `\WP_Druid\Services\Users::get_druid_profile_from_user_data($druid_user_data)`
+
+Notas:
+
+- `get_current_user_druid_user_data()` devuelve el objeto bruto obtenido desde `Genetsis\UserApi::getUserLogged()`.
+- `get_current_user_druid_profile()` devuelve un perfil normalizado para integraciones ligeras con:
+  - `druid_id`
+  - `email`
+  - `email_confirmed`
+  - `first_name`
+  - `last_name`
+  - `display_name`
+- Estas APIs leen el usuario actual desde DruID, no desde la replica persistida en WordPress.
+
+Ejemplos:
+
+```php
+$druid_user = \WP_Druid\Services\Users::get_current_user_druid_user_data();
+
+if ($druid_user instanceof \stdClass) {
+    $email = $druid_user->user->user_ids->email->value ?? null;
+}
+```
+
+```php
+$profile = \WP_Druid\Services\Users::get_current_user_druid_profile();
+
+if (is_array($profile) && !empty($profile['email'])) {
+    $email = $profile['email'];
+}
+```
+
+Tambien puede normalizar el payload recibido en los hooks publicos del plugin:
+
+```php
+add_action('druid_post_login', function ($context) {
+    if (!is_array($context) || empty($context['druid_user']) || !($context['druid_user'] instanceof \stdClass)) {
+        return;
+    }
+
+    $profile = \WP_Druid\Services\Users::get_druid_profile_from_user_data($context['druid_user']);
+}, 10, 1);
+```
+
 ### Hooks públicos
 
 El plugin expone hooks para reaccionar a eventos del ciclo de autenticación:

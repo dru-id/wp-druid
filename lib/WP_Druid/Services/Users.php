@@ -1,9 +1,12 @@
 <?php namespace WP_Druid\Services;
 
+use Genetsis\Identity;
+use Genetsis\UserApi;
 use Hashids\Hashids;
-use WP_Druid\Services\Errors as Errors_Service;
 use WP_Druid\Exceptions\Users\Create_User_Exception;
 use WP_Druid\Exceptions\Users\Login_User_Exception;
+use WP_Druid\Factory\IdentityFactory;
+use WP_Druid\Services\Errors as Errors_Service;
 
 /**
  * @package WP Druid
@@ -243,6 +246,59 @@ class Users
         }
 
         return !is_null(static::get_druid_id_by_wp_user_id($wp_user_id));
+    }
+
+    /**
+     * Gets the current DruID user directly from the SDK source.
+     *
+     * @return \stdClass|null
+     */
+    public static function get_current_user_druid_user_data()
+    {
+        static $loaded = false;
+        static $druid_user_data = null;
+
+        if ($loaded) {
+            return $druid_user_data;
+        }
+
+        $loaded = true;
+
+        if (!IdentityFactory::init(true) || !Identity::isConnected()) {
+            return null;
+        }
+
+        $druid_user_data = UserApi::getUserLogged();
+
+        return ($druid_user_data instanceof \stdClass)
+            ? $druid_user_data
+            : null;
+    }
+
+    /**
+     * Gets the normalized public profile from a DruID user payload.
+     *
+     * @param \stdClass $druid_user_data
+     * @return array|null
+     */
+    public static function get_druid_profile_from_user_data($druid_user_data)
+    {
+        return static::normalize_druid_profile($druid_user_data);
+    }
+
+    /**
+     * Gets the normalized public profile linked to the current DruID session.
+     *
+     * @return array|null
+     */
+    public static function get_current_user_druid_profile()
+    {
+        $druid_user_data = static::get_current_user_druid_user_data();
+        if (!($druid_user_data instanceof \stdClass)) {
+            return null;
+        }
+
+        return static::normalize_druid_profile($druid_user_data);
     }
 
     /**
@@ -519,5 +575,56 @@ class Users
         }
 
         return $results;
+    }
+
+    /**
+     * Extracts a stable public profile from the raw DruID payload.
+     *
+     * @param \stdClass $druid_user_data
+     * @return array|null
+     */
+    protected static function normalize_druid_profile($druid_user_data)
+    {
+        if (!($druid_user_data instanceof \stdClass) || !isset($druid_user_data->user) || !($druid_user_data->user instanceof \stdClass)) {
+            return null;
+        }
+
+        $first_name = '';
+        if (isset($druid_user_data->user->user_data->name->value) && is_string($druid_user_data->user->user_data->name->value)) {
+            $first_name = sanitize_text_field($druid_user_data->user->user_data->name->value);
+        }
+
+        $last_name = '';
+        if (isset($druid_user_data->user->user_data->surname->value) && is_string($druid_user_data->user->user_data->surname->value)) {
+            $last_name = sanitize_text_field($druid_user_data->user->user_data->surname->value);
+        }
+
+        $email = null;
+        if (isset($druid_user_data->user->user_ids->email->value) && is_string($druid_user_data->user->user_ids->email->value)) {
+            $email = sanitize_email($druid_user_data->user->user_ids->email->value);
+            if ($email === '') {
+                $email = null;
+            }
+        }
+
+        $email_confirmed = false;
+        if (isset($druid_user_data->user->user_ids->email->confirmed)) {
+            $email_confirmed = (bool) $druid_user_data->user->user_ids->email->confirmed;
+        }
+
+        $display_name = trim($first_name . ' ' . $last_name);
+
+        return array(
+            'druid_id' => (isset($druid_user_data->user->oid) && is_scalar($druid_user_data->user->oid))
+                ? (string) $druid_user_data->user->oid
+                : null,
+            'email' => $email,
+            'email_confirmed' => $email_confirmed,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'display_name' => $display_name !== ''
+                ? $display_name
+                : null,
+        );
     }
 }
